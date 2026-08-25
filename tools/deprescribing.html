@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Polypharmacy &amp; Deprescribing</title>
+<style>
+:root{--ink:#17252d;--blue:#28566b;--pale:#edf5f7;--line:#cbd7dc;--warn:#fff6df}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f3f6f7;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1050px;margin:30px auto;background:#fff;padding:42px;border-radius:14px;box-shadow:0 8px 28px #1232}h1{margin:0;color:#173f51}h2{color:var(--blue);margin-top:32px}.lead{color:#536872}.notice{background:var(--warn);border-left:5px solid #d39b27;padding:14px 16px;margin:22px 0}.nav{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}.nav a,button,.button{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:6px;padding:8px 12px;text-decoration:none;font-weight:650;cursor:pointer}.card{border:1px solid var(--line);border-radius:10px;padding:20px;margin:18px 0;scroll-margin-top:16px}.checks label{display:block;padding:7px 0;border-bottom:1px solid #e8edef}.checks label:last-child{border:0}input[type=checkbox],input[type=number]{width:1.05rem;height:1.05rem;vertical-align:middle;margin-right:7px}input[type=number]{width:56px;height:auto;margin-left:8px;border:1px solid var(--line);border-radius:5px;padding:3px 6px}.result{margin-top:14px;padding:12px 14px;background:var(--pale);border-left:5px solid var(--blue);min-height:48px}.small{font-size:.9rem;color:#596c75}.urgent{background:#fff0f0;border-left-color:#ad2c2c}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}.secondary{background:#687b84}table.ref{width:100%;border-collapse:collapse;font-size:.86rem;margin:14px 0}table.ref th,table.ref td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}table.ref th{background:var(--pale);color:#173f51;font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}table.ref tr:nth-child(even) td{background:#fafcfc}details.acc{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;overflow:hidden}details.acc summary{cursor:pointer;padding:11px 14px;font-weight:700;font-size:.95rem;background:#fbfaf7;list-style:none}details.acc summary::-webkit-details-marker{display:none}details.acc summary::after{content:"+";float:right;color:var(--blue)}details.acc[open] summary::after{content:"\2013"}details.acc .acc-body{padding:0 16px 16px}@media print{body{background:#fff}main{box-shadow:none;margin:0;max-width:none}.nav,.actions,.button{display:none}.card{break-inside:avoid}details.acc{border:1px solid #ccc}}@media(max-width:650px){main{margin:0;padding:22px 16px;border-radius:0}table.ref{display:block;overflow-x:auto;white-space:nowrap}}
+</style></head><body><main>
+<h1 id="top">Polypharmacy &amp; Deprescribing</h1>
+<p class="lead">High-yield prompts for a structured medication review, plus a practical deprescribing framework.</p>
+<div class="notice"><strong>Important:</strong> This is a high-yield working prompt list, not a reproduction of the full STOPP/START v3 (190 criteria) or Beers Criteria instruments. Use the published criteria directly for an exhaustive review; use this page to structure the conversation and catch the most common misses at the point of care.</div>
+
+<div class="card" id="count">
+  <h2 style="margin-top:0">Polypharmacy flag</h2>
+  <label>Number of regular medications (prescribed + OTC + complementary) <input type="number" id="medCount" min="0" placeholder="0"></label>
+  <div class="result" id="countResult">Enter a medication count.</div>
+</div>
+
+<nav class="nav" id="nav"></nav><div id="modules"></div>
+
+<div class="actions"><button onclick="window.print()">Print completed page</button><button class="secondary" id="reset">Clear all</button></div>
+
+<h2>Deprescribing framework</h2>
+<table class="ref">
+<tr><th>Step</th><th>Detail</th></tr>
+<tr><td>1 · Establish goals</td><td>Clarify life expectancy, goals of care, and what the patient values — this determines whether long-term preventive medications remain appropriate.</td></tr>
+<tr><td>2 · Review every medication</td><td>Confirm current indication still applies, benefit still plausible in remaining life expectancy, and no significant harm/interaction/burden outweighs it.</td></tr>
+<tr><td>3 · Prioritise</td><td>Target medications with the highest harm-to-benefit ratio first: anticholinergic/sedative burden, falls-risk drugs, drugs without a clear ongoing indication, drugs treating side effects of other drugs (prescribing cascades).</td></tr>
+<tr><td>4 · Sequence the taper</td><td>One class at a time where feasible. Taper (don't abruptly stop) benzodiazepines, opioids, antidepressants, beta-blockers, corticosteroids and antiepileptics; most other classes can usually be stopped directly.</td></tr>
+<tr><td>5 · Monitor</td><td>Explicit monitoring plan for withdrawal effects and disease recurrence; document a review date.</td></tr>
+<tr><td>6 · Document &amp; communicate</td><td>Record shared decision-making and rationale; communicate changes to GP/pharmacist and update any dose-administration aid.</td></tr>
+</table>
+
+<h2>Reference</h2>
+<details class="acc" open><summary>Common STOPP-type prompts (by system) — high-yield subset</summary><div class="acc-body">
+<table class="ref">
+<tr><th>System</th><th>Common flags</th></tr>
+<tr><td>Cardiovascular</td><td>Loop diuretic for dependent ankle oedema alone without heart failure evidence; long-term antiarrhythmic with better alternatives; digoxin >0.125 mg/day with reduced renal function; anti-hypertensive causing recurrent orthostatic hypotension/falls</td></tr>
+<tr><td>CNS / psychotropic</td><td>Benzodiazepine >4 weeks for anxiety/insomnia; long-term antipsychotic for BPSD without regular review; tricyclic antidepressant with dementia, glaucoma, cardiac conduction disease or prostatism; combination sedatives (falls/sedation risk stacking)</td></tr>
+<tr><td>Gastrointestinal</td><td>Long-term PPI (>8 weeks) at full dose without a clear ongoing indication; regular opioid without concurrent laxative</td></tr>
+<tr><td>Musculoskeletal</td><td>Long-term NSAID with GI, renal, cardiovascular or heart-failure risk without gastroprotection; long-term corticosteroid without bone protection considered</td></tr>
+<tr><td>Urogenital</td><td>Antimuscarinic for urinary symptoms with significant cognitive impairment or dementia</td></tr>
+<tr><td>Endocrine</td><td>Long-acting sulfonylurea (e.g. glibenclamide) with hypoglycaemia risk; tight glycaemic targets in frailty/limited life expectancy</td></tr>
+<tr><td>Duplication / cascade</td><td>Two drugs from the same class without added benefit; a medication started to treat another medication's side effect where the original agent could instead be reduced/stopped</td></tr>
+<tr><td>Anticholinergic burden</td><td>Cumulative burden across bladder, GI, psychotropic and antihistamine agents — burden accumulates even when no single drug is flagrantly inappropriate</td></tr>
+</table>
+</div></details>
+<details class="acc"><summary>Common START-type prompts — often missed beneficial medications</summary><div class="acc-body">
+<table class="ref">
+<tr><th>Indication</th><th>Consider</th></tr>
+<tr><td>Atrial fibrillation</td><td>Anticoagulation where stroke-risk score supports it and bleeding risk is acceptable/mitigated</td></tr>
+<tr><td>Post vascular event, good prognosis</td><td>Statin, antiplatelet where not already in place</td></tr>
+<tr><td>Heart failure (reduced EF)</td><td>ACEi/ARB or ARNI, beta-blocker, MRA per current guideline-directed therapy</td></tr>
+<tr><td>Osteoporosis / fragility fracture</td><td>Vitamin D and calcium if intake insufficient; anti-resorptive/anabolic therapy per bone-health pathway</td></tr>
+<tr><td>Opioid use</td><td>Concurrent laxative</td></tr>
+<tr><td>NSAID + antiplatelet/anticoagulant</td><td>Gastroprotection (PPI)</td></tr>
+<tr><td>COPD with recurrent exacerbations</td><td>Bronchodilator/inhaled therapy reviewed against current staging; pneumococcal/influenza vaccination</td></tr>
+<tr><td>Persistent depressive symptoms</td><td>Antidepressant if not trialled, alongside non-pharmacological management</td></tr>
+</table>
+</div></details>
+<details class="acc"><summary>Beers-type high-risk classes — overview</summary><div class="acc-body">
+<p>Complementary to STOPP/START; used alongside it, coverage differs. Broad high-risk categories to check on any medication list: benzodiazepines and non-benzodiazepine sedative-hypnotics ("Z-drugs"), strong anticholinergics (first-generation antihistamines, some bladder antimuscarinics, tricyclic antidepressants), long-acting sulfonylureas, NSAIDs (chronic use), skeletal muscle relaxants, antipsychotics for BPSD outside a time-limited, monitored trial, and digoxin at doses above 0.125 mg/day.</p>
+</div></details>
+<details class="acc"><summary>Limited life expectancy / comfort-focused goals</summary><div class="acc-body">
+<p>Prioritise STOPP over START. Deprescribe medications whose benefit accrues only over years (statins for primary prevention, bisphosphonates, tight glycaemic control, most preventive screening-adjacent medications) while retaining or adding medications for symptom control. Document the goals-of-care conversation that supports this shift.</p>
+</div></details>
+
+<p class="small">Guide only — not a protocol. Confirm against the current published STOPP/START v3 and Beers Criteria before clinical use. No patient information entered here is stored or transmitted.</p>
+</main><script>
+document.getElementById('medCount').addEventListener('input', e=>{
+  const n = parseInt(e.target.value,10);
+  const box = document.getElementById('countResult');
+  if(isNaN(n)){ box.className='result'; box.innerHTML='Enter a medication count.'; return; }
+  box.className = 'result' + (n>=10 ? ' urgent' : '');
+  box.innerHTML = n>=10 ? '<strong>Hyperpolypharmacy (≥10 medications).</strong> Structured, systematic review strongly indicated.'
+    : n>=5 ? '<strong>Polypharmacy (≥5 medications).</strong> Structured review indicated.'
+    : '<strong>Below the polypharmacy threshold.</strong> Still worth a quick STOPP/START pass, especially after any hospitalisation or new prescriber.';
+});
+
+const modules=[];
+modules.push({id:'flags',title:'Quick risk-combination screen',note:'Any positive combination below is a same-visit review trigger.',items:[
+  {t:'Benzodiazepine or Z-drug + opioid',flag:true},
+  {t:'Opioid + gabapentinoid',flag:true},
+  {t:'Antipsychotic + benzodiazepine',flag:true},
+  {t:'≥3 CNS-active/sedating medications concurrently',flag:true},
+  {t:'≥2 falls-risk medications (sedative, antihypertensive, opioid, anticholinergic) plus a fall in the past 12 months',flag:true},
+  {t:'NSAID + antiplatelet/anticoagulant without gastroprotection',flag:true},
+  {t:'ACE inhibitor/ARB + potassium-sparing diuretic + NSAID (triple whammy — AKI risk)',flag:true}
+],rule:(n,a)=>n>0 ? 'One or more high-risk combinations present — address at this visit; do not defer to a routine review.' : 'No high-risk combination flagged on this screen.'});
+modules.push({id:'process',title:'Review process checklist',items:[
+  'Full reconciliation performed (prescribed, OTC, complementary) against what is physically in the home',
+  'Indication for every medication confirmed as still current',
+  'Renal/hepatic dose adjustment checked where relevant',
+  'Adherence and administration reviewed — who organises doses, dose-administration aid in use/needed',
+  'STOPP/START-type prompts above reviewed system by system',
+  'Deprescribing candidates identified and prioritised',
+  'Taper plan documented for any class requiring gradual withdrawal',
+  'Follow-up/monitoring plan set and communicated to GP/pharmacist'
+],rule:n=>n>=6 ? 'Review process substantially complete.' : 'Review in progress — work through remaining steps.'});
+
+const nav=document.querySelector('#nav'),host=document.querySelector('#modules');
+modules.forEach(m=>{nav.insertAdjacentHTML('beforeend','<a href="#'+m.id+'">'+m.title+'</a>');host.insertAdjacentHTML('beforeend','<section class="card" id="'+m.id+'"><h2>'+m.title+'</h2>'+(m.note?'<p class="small">'+m.note+'</p>':'')+'<div class="checks">'+m.items.map((x,i)=>{const it=typeof x==='string'?{t:x}:x;return '<label><input type="checkbox" data-i="'+i+'">'+it.t+'</label>';}).join('')+'</div><div class="result" aria-live="polite">Select applicable findings.</div><p><a class="button" href="#top">↑ Return to toolkit menu</a></p></section>')});
+function update(card,m){const a=[...card.querySelectorAll('input[type=checkbox]')].map(x=>x.checked),n=a.filter(Boolean).length,r=m.rule(n,a);const res=card.querySelector('.result');res.innerHTML='<strong>'+r+'</strong><br>'+n+' of '+a.length+' selected.';res.classList.toggle('urgent', m.id==='flags' && n>0);}
+modules.forEach(m=>{const c=document.querySelector('#'+m.id);c.querySelectorAll('input[type=checkbox]').forEach(x=>x.addEventListener('change',()=>update(c,m)))});
+document.querySelector('#reset').addEventListener('click',()=>{
+  document.getElementById('medCount').value='';
+  document.getElementById('countResult').className='result';
+  document.getElementById('countResult').innerHTML='Enter a medication count.';
+  document.querySelectorAll('#modules input[type=checkbox]').forEach(x=>x.checked=false);
+  document.querySelectorAll('#modules .result').forEach(x=>{x.textContent='Select applicable findings.';x.classList.remove('urgent')});
+});
+</script></body></html>
