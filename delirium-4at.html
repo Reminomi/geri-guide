@@ -1,0 +1,144 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Delirium Screening — 4AT</title>
+<style>
+:root{--ink:#17252d;--blue:#28566b;--blue-dark:#173f51;--pale:#edf5f7;--line:#cbd7dc;--warn:#fff6df;--urgent:#fff0f0;--urgent-line:#ad2c2c;--good:#eaf6ef;--good-line:#2f8a52}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f3f6f7;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1050px;margin:30px auto;background:#fff;padding:42px;border-radius:14px;box-shadow:0 8px 28px #1232}
+h1{margin:0;color:#173f51}h2{color:var(--blue);margin-top:32px}
+.lead{color:#536872}
+.notice{background:var(--warn);border-left:5px solid #d39b27;padding:14px 16px;margin:22px 0}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}
+.nav a,button,.button{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:6px;padding:8px 12px;text-decoration:none;font-weight:650;cursor:pointer}
+.card{border:1px solid var(--line);border-radius:10px;padding:20px;margin:18px 0;scroll-margin-top:16px}
+.opt{display:block;padding:9px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:7px;cursor:pointer;transition:background .1s,border-color .1s}
+.opt:hover{background:#f8fafb}
+.opt input{margin-right:9px;vertical-align:middle}
+.opt.sel{background:var(--pale);border-color:var(--blue)}
+.opt .pts{float:right;font-family:ui-monospace,monospace;color:#6d838b;font-size:.82rem}
+.result{margin-top:14px;padding:14px 16px;background:var(--pale);border-left:5px solid var(--blue);min-height:48px}
+.result.urgent{background:var(--urgent);border-left-color:var(--urgent-line)}
+.result.good{background:var(--good);border-left-color:var(--good-line)}
+.result .score{font-size:1.5rem;font-weight:800;margin-right:10px}
+.small{font-size:.9rem;color:#596c75}
+table.ref{width:100%;border-collapse:collapse;font-size:.88rem;margin:14px 0}
+table.ref th,table.ref td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.ref th{background:var(--pale);color:var(--blue-dark);font-size:.78rem;text-transform:uppercase;letter-spacing:.03em}
+table.ref tr:nth-child(even) td{background:#fafcfc}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.secondary{background:#687b84}
+@media print{body{background:#fff}main{box-shadow:none;margin:0;max-width:none}.nav,.actions,.button{display:none}.card{break-inside:avoid}}
+@media(max-width:650px){main{margin:0;padding:22px 16px;border-radius:0}table.ref{display:block;overflow-x:auto;white-space:nowrap}}
+</style></head><body><main>
+<h1 id="top">Delirium Screening — 4AT</h1>
+<p class="lead">Rapid delirium/cognitive-impairment screen. Takes under 2 minutes; no special training required.</p>
+<div class="notice"><strong>Important:</strong> The 4AT is a screening tool, not a diagnostic instrument. A positive screen requires clinical assessment for delirium (precipitant identification, DSM-5-TR criteria) and does not itself confirm the diagnosis. Score all four items even if the patient is drowsy or uncooperative — an inability to engage is scored, not left blank.</div>
+
+<div class="card" id="q1">
+  <h2 style="margin-top:0">1 · Alertness</h2>
+  <p class="small">Includes patients who are agitated/hyperactive as well as those who are drowsy/sleepy. Observe the patient. If asleep, gently attempt to wake by voice or touch; ask them to state their name and address to assist rating.</p>
+  <label class="opt" data-pts="0"><input type="radio" name="q1" value="0">Normal (fully alert, not agitated, throughout assessment)<span class="pts">0</span></label>
+  <label class="opt" data-pts="0"><input type="radio" name="q1" value="0">Mild sleepiness for &lt;10 seconds after waking, then normal<span class="pts">0</span></label>
+  <label class="opt" data-pts="4"><input type="radio" name="q1" value="4">Clearly abnormal (e.g. drowsy/difficult to rouse, or hyperactive/agitated/hypervigilant)<span class="pts">4</span></label>
+</div>
+
+<div class="card" id="q2">
+  <h2 style="margin-top:0">2 · AMT4</h2>
+  <p class="small">Age, date of birth, place (name of the hospital/building), current year.</p>
+  <label class="opt" data-pts="0"><input type="radio" name="q2" value="0">No mistakes<span class="pts">0</span></label>
+  <label class="opt" data-pts="1"><input type="radio" name="q2" value="1">1 mistake<span class="pts">1</span></label>
+  <label class="opt" data-pts="2"><input type="radio" name="q2" value="2">≥2 mistakes / untestable<span class="pts">2</span></label>
+</div>
+
+<div class="card" id="q3">
+  <h2 style="margin-top:0">3 · Attention</h2>
+  <p class="small">Ask: "Please tell me the months of the year in backwards order, starting at December." To assist initial understanding, one prompt of "what is the month before December?" is permitted.</p>
+  <label class="opt" data-pts="0"><input type="radio" name="q3" value="0">Achieves 7 months or more correctly<span class="pts">0</span></label>
+  <label class="opt" data-pts="1"><input type="radio" name="q3" value="1">Starts but scores &lt;7 months / refuses to start<span class="pts">1</span></label>
+  <label class="opt" data-pts="2"><input type="radio" name="q3" value="2">Untestable (cannot start because too unwell, drowsy, inattentive)<span class="pts">2</span></label>
+</div>
+
+<div class="card" id="q4">
+  <h2 style="margin-top:0">4 · Acute change or fluctuating course</h2>
+  <p class="small">Evidence of significant change or fluctuation in alertness, cognition, or other mental function (e.g. paranoia, hallucinations) arising over the last 2 weeks and still evident in the last 24 hours, from collateral history and/or observation.</p>
+  <label class="opt" data-pts="0"><input type="radio" name="q4" value="0">No<span class="pts">0</span></label>
+  <label class="opt" data-pts="4"><input type="radio" name="q4" value="4">Yes<span class="pts">4</span></label>
+</div>
+
+<div class="card" id="scorecard">
+  <h2 style="margin-top:0">Result</h2>
+  <div class="result" id="result">Complete all four items above.</div>
+</div>
+
+<div class="actions">
+  <button id="reset" class="secondary">Clear all</button>
+  <button onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<h2>Interpretation reference</h2>
+<table class="ref">
+  <tr><th>Total score</th><th>Interpretation</th></tr>
+  <tr><td class="mono">4 or above</td><td>Possible delirium ± cognitive impairment. Assess further for delirium (identify and treat precipitant; do not stage cognitive/NCD status until the acute episode has resolved).</td></tr>
+  <tr><td class="mono">1–3</td><td>Possible cognitive impairment. Delirium is less likely on this screen alone but is not excluded — interpret alongside clinical context and collateral history. Arrange formal cognitive assessment once medically stable.</td></tr>
+  <tr><td class="mono">0</td><td>Delirium or severe cognitive impairment unlikely — but does not rule out either, especially if collateral history for item 4 was limited or unavailable.</td></tr>
+</table>
+
+<h2>Next steps if delirium is possible</h2>
+<table class="ref">
+  <tr><th>Domain</th><th>Action</th></tr>
+  <tr><td>Precipitant screen</td><td>Infection, medication (new/changed, anticholinergic/sedative burden), metabolic/electrolyte disturbance, urinary retention, constipation/faecal loading, pain, hypoxia, alcohol/substance withdrawal, environment change, sensory deprivation (glasses/hearing aids not in use).</td></tr>
+  <tr><td>Examination</td><td>Vitals, hydration status, focal neurology, signs of infection, bladder/bowel review.</td></tr>
+  <tr><td>Investigations (guided by history/exam)</td><td>FBC, EUC, calcium, glucose, LFTs, TFTs, CRP, urinalysis/MSU, chest X-ray, ECG; further work-up (CT brain, cultures) only if indicated.</td></tr>
+  <tr><td>Management</td><td>Treat identified precipitant(s); non-pharmacological delirium bundle (orientation, reduce noise/overstimulation, consistent staff, mobilise, correct sensory deficits, sleep-wake cycle support, family/carer presence); avoid physical restraint; medication only for severe distress/safety risk unresponsive to other measures, lowest dose, shortest duration, regular review.</td></tr>
+  <tr><td>Documentation</td><td>Note precipitating/predisposing factors, plan for repeat cognitive assessment after resolution, and communicate delirium episode to GP/next care team — it is a marker of future dementia and mortality risk.</td></tr>
+</table>
+
+<p class="small">4AT (4 A's Test) — widely used, validated delirium screening instrument; no license required, no special training needed to administer. This page reproduces the scoring structure and standard interpretation bands for bedside use; confirm against the current published 4AT instrument for training and audit purposes. Not a substitute for clinical judgement or formal DSM-5-TR delirium assessment. No patient information entered here is stored or transmitted.</p>
+
+</main><script>
+function updateSelected(name){
+  document.querySelectorAll('label[data-pts]').forEach(l=>{
+    const input = l.querySelector('input');
+    if(input.name===name) l.classList.toggle('sel', input.checked);
+  });
+}
+['q1','q2','q3','q4'].forEach(name=>{
+  document.querySelectorAll('input[name="'+name+'"]').forEach(inp=>{
+    inp.addEventListener('change', ()=>{ updateSelected(name); compute(); });
+  });
+});
+
+function compute(){
+  const names=['q1','q2','q3','q4'];
+  let total=0, answered=0;
+  names.forEach(n=>{
+    const checked = document.querySelector('input[name="'+n+'"]:checked');
+    if(checked){ answered++; total += parseInt(checked.value,10); }
+  });
+  const box = document.getElementById('result');
+  if(answered<4){
+    box.className='result';
+    box.innerHTML = '<span class="small">Answered '+answered+' of 4 items. Complete all four to see the score.</span>';
+    return;
+  }
+  let cls='result', text='';
+  if(total>=4){
+    cls='result urgent';
+    text = 'Possible delirium ± cognitive impairment. Assess for and treat precipitants; defer formal cognitive/NCD staging until the acute episode has resolved.';
+  } else if(total>=1){
+    cls='result';
+    text = 'Possible cognitive impairment. Delirium less likely on this screen alone but not excluded — interpret with clinical context. Arrange formal cognitive assessment once medically stable.';
+  } else {
+    cls='result good';
+    text = 'Delirium or severe cognitive impairment unlikely on this screen — does not fully exclude either, particularly with limited collateral history.';
+  }
+  box.className = cls;
+  box.innerHTML = '<span class="score">'+total+'/12</span>' + text;
+}
+
+document.getElementById('reset').addEventListener('click', ()=>{
+  document.querySelectorAll('input[type=radio]').forEach(i=>i.checked=false);
+  document.querySelectorAll('label[data-pts]').forEach(l=>l.classList.remove('sel'));
+  document.getElementById('result').className='result';
+  document.getElementById('result').innerHTML='Complete all four items above.';
+});
+</script></body></html>

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capacity Assessment Register</title>
+<style>
+  :root{
+    --ink:#101820;
+    --ink-2:#182531;
+    --parchment:#EAE6D8;
+    --parchment-2:#E1DCC9;
+    --ledger-line:#B7452F;
+    --brass:#A67C3D;
+    --brass-light:#C9A466;
+    --green:#3F6B5C;
+    --text-dark:#211B12;
+    --text-muted:#5B5646;
+    --text-on-ink:#D8D5C8;
+    --text-on-ink-dim:#8C93A0;
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(166,124,61,0.10), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(63,107,92,0.10), transparent 45%);
+    color:var(--text-on-ink);
+    font-family:var(--sans);
+    min-height:100vh;
+  }
+  a{color:inherit;}
+
+  /* ---------- header ---------- */
+  .masthead{
+    padding:38px 32px 22px;
+    text-align:center;
+    border-bottom:1px solid rgba(216,213,200,0.12);
+  }
+  .masthead .eyebrow{
+    font-family:var(--mono);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--brass-light);
+    margin-bottom:10px;
+  }
+  .masthead h1{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(28px,4vw,44px);
+    margin:0 0 8px;
+    letter-spacing:.01em;
+  }
+  .masthead p{
+    max-width:560px;
+    margin:0 auto;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--text-on-ink-dim);
+  }
+
+  /* ---------- layout ---------- */
+  .wrap{
+    display:flex;
+    max-width:1180px;
+    margin:0 auto;
+    padding:34px 24px 70px;
+    gap:0;
+    align-items:flex-start;
+  }
+  @media (max-width:860px){
+    .wrap{flex-direction:column; padding:22px 14px 50px;}
+  }
+
+  /* ---------- tab rail ---------- */
+  .rail{
+    flex:0 0 232px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    position:sticky;
+    top:20px;
+  }
+  @media (max-width:860px){
+    .rail{
+      position:static;
+      flex-direction:row;
+      flex-wrap:wrap;
+      width:100%;
+      margin-bottom:18px;
+    }
+  }
+  .tab{
+    all:unset;
+    cursor:pointer;
+    display:flex;
+    align-items:baseline;
+    gap:9px;
+    padding:11px 14px;
+    border-radius:6px 2px 2px 6px;
+    background:rgba(216,213,200,0.04);
+    border:1px solid rgba(216,213,200,0.09);
+    border-right:none;
+    transition:background .15s, transform .15s, border-color .15s;
+    font-size:13.5px;
+    color:var(--text-on-ink-dim);
+  }
+  .tab:hover{background:rgba(216,213,200,0.09); color:var(--text-on-ink);}
+  .tab .code{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--brass-light);
+    flex:0 0 auto;
+  }
+  .tab.active{
+    background:var(--parchment);
+    color:var(--text-dark);
+    border-color:var(--parchment);
+    transform:translateX(6px);
+    box-shadow:-2px 3px 10px rgba(0,0,0,0.35);
+  }
+  .tab.active .code{color:var(--ledger-line);}
+  @media (max-width:860px){
+    .tab.active{transform:none;}
+  }
+
+  /* ---------- page (parchment) ---------- */
+  .page{
+    flex:1;
+    min-width:0;
+    background:var(--parchment);
+    color:var(--text-dark);
+    border-radius:3px;
+    margin-left:22px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.45);
+    position:relative;
+    overflow:hidden;
+  }
+  @media (max-width:860px){ .page{margin-left:0;} }
+  .page::before{
+    /* ledger margin rule */
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:78px;
+    width:1px;
+    background:rgba(183,69,47,0.35);
+  }
+  @media (max-width:600px){ .page::before{left:44px;} }
+  .page::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 33px,
+      rgba(91,86,70,0.06) 34px
+    );
+    pointer-events:none;
+  }
+  .page-inner{
+    position:relative;
+    z-index:1;
+    padding:38px 40px 44px 100px;
+  }
+  @media (max-width:600px){ .page-inner{padding:26px 22px 32px 60px;} }
+
+  .domain-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    margin-bottom:6px;
+  }
+  .domain-head h2{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:26px;
+    margin:0;
+    line-height:1.25;
+  }
+  .domain-code{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ledger-line);
+    white-space:nowrap;
+    padding-top:6px;
+  }
+  .focus-line{
+    font-size:14.5px;
+    color:var(--text-muted);
+    font-style:italic;
+    margin:2px 0 22px;
+    line-height:1.5;
+  }
+
+  .status-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.04em;
+    padding:5px 11px;
+    border-radius:20px;
+    border:1px solid rgba(63,107,92,0.4);
+    color:var(--green);
+    background:rgba(63,107,92,0.08);
+    margin-bottom:22px;
+  }
+  .status-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .status-badge.warn{color:var(--ledger-line); border-color:rgba(183,69,47,0.4); background:rgba(183,69,47,0.08);}
+  .status-badge.warn .dot{background:var(--ledger-line);}
+
+  h3.sec{
+    font-family:var(--serif);
+    font-size:15.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin:26px 0 12px;
+    color:var(--text-dark);
+    border-bottom:1px solid rgba(33,27,18,0.15);
+    padding-bottom:6px;
+  }
+
+  /* ---------- unified element cards (test + checklist + questions) ---------- */
+  .elem-list{display:flex; flex-direction:column; gap:12px;}
+  .elem-card{
+    background:rgba(255,255,255,0.32);
+    border:1px solid rgba(33,27,18,0.12);
+    border-radius:6px;
+    padding:12px 14px 14px;
+    transition:background .15s;
+  }
+  .elem-card:hover{background:rgba(255,255,255,0.48);}
+  .elem-head{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    cursor:pointer;
+  }
+  .elem-head input{margin-top:3px; accent-color:var(--green); width:15px; height:15px; flex:0 0 auto;}
+  .elem-num{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--brass);
+    border:1px solid var(--brass);
+    width:19px;height:19px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;
+    margin-top:1px;
+  }
+  .elem-text{font-size:14.5px; line-height:1.5;}
+
+  .elem-questions{
+    margin:10px 0 0 45px;
+    padding-left:14px;
+    border-left:2px solid rgba(33,27,18,0.1);
+  }
+  .eq-tier{margin-bottom:8px;}
+  .eq-tier:last-child{margin-bottom:0;}
+  .eq-tier-label{
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--green);
+    margin-bottom:3px;
+  }
+  .eq-tier-label.complex{color:var(--ledger-line);}
+  .eq-list{margin:0; padding-left:0; list-style:none;}
+  .eq-list li{
+    position:relative;
+    padding:3px 0 3px 18px;
+    font-size:13px;
+    line-height:1.5;
+    font-style:italic;
+    color:var(--text-dark);
+  }
+  .eq-list li::before{
+    content:"\201C";
+    position:absolute;
+    left:0; top:1px;
+    font-family:var(--serif);
+    font-style:normal;
+    font-size:16px;
+    color:var(--brass);
+  }
+
+  textarea.notes{
+    width:100%;
+    min-height:70px;
+    margin-top:18px;
+    background:rgba(255,255,255,0.4);
+    border:1px solid rgba(33,27,18,0.15);
+    border-radius:5px;
+    padding:10px 12px;
+    font-family:var(--sans);
+    font-size:13.5px;
+    color:var(--text-dark);
+    resize:vertical;
+  }
+  textarea.notes:focus{outline:2px solid var(--brass); outline-offset:1px;}
+
+  .actions{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
+  button.act{
+    all:unset;
+    cursor:pointer;
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.03em;
+    padding:9px 16px;
+    border-radius:4px;
+    border:1px solid var(--ink-2);
+    background:var(--ink-2);
+    color:var(--text-on-ink);
+    transition:background .15s, transform .1s;
+  }
+  button.act:hover{background:#213244;}
+  button.act:active{transform:scale(.97);}
+  button.act.ghost{background:transparent; color:var(--text-dark); border-color:rgba(33,27,18,0.3);}
+  button.act.ghost:hover{background:rgba(33,27,18,0.06);}
+
+  .note-flag{font-size:12.5px; color:var(--text-muted); margin-top:16px; line-height:1.5;}
+
+  /* quick reference table view */
+  .ref-table{width:100%; border-collapse:collapse; font-size:13.5px; margin-top:6px;}
+  .ref-table th, .ref-table td{text-align:left; padding:10px 12px; border-bottom:1px solid rgba(33,27,18,0.12); vertical-align:top;}
+  .ref-table th{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); font-weight:400;}
+  .ref-table td.dm{font-weight:700; white-space:nowrap;}
+  .ref-table tr:hover td{background:rgba(255,255,255,0.35);}
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-on-ink-dim);
+    padding:0 24px 40px;
+    line-height:1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .tab, button.act{transition:none;}
+  }
+
+  .toast{
+    position:fixed;
+    bottom:22px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink-2);
+    color:var(--text-on-ink);
+    font-family:var(--mono);
+    font-size:12.5px;
+    padding:10px 18px;
+    border-radius:5px;
+    border:1px solid rgba(216,213,200,0.15);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s, transform .25s;
+    z-index:50;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="eyebrow">Decision-Making Capacity · Reference &amp; Working Register</div>
+  <h1>Capacity Assessment Register</h1>
+  <p>An interactive companion for assessing decision-specific capacity across ten domains — including capacity to appoint an Enduring Power of Attorney. Model framework: Qld Powers of Attorney Act 1998 &amp; Guardianship and Administration Act 2000. Check local legislation outside Queensland.</p>
+</div>
+
+<div class="wrap">
+  <nav class="rail" id="rail" aria-label="Capacity domains"></nav>
+  <main class="page">
+    <div class="page-inner" id="pageInner"></div>
+  </main>
+</div>
+
+<footer>
+  General reference tool only — not legal or medical advice, and not a determination of capacity. Entries stay in this browser tab and are not saved or transmitted anywhere.
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DOMAINS = [
+  {
+    id:"financial",
+    code:"§5.1",
+    name:"Financial & Property Management",
+    focus:"Ability to manage money, assets, and enter transactions — from everyday spending to major decisions like selling a house or large gifts.",
+    flags:"Sudden, uncharacteristic large gifts; inability to explain the transaction back in their own words; a third party visibly directing the conversation.",
+    test:[
+      { text:"Understands, in broad terms, what assets and income they have",
+        questions:{ simple:["How much money do you have with you today?"],
+                    complex:["Can you tell me, roughly, what money and property you have overall?"] } },
+      { text:"Understands the nature of the specific transaction and its immediate effect",
+        questions:{ simple:["What are you buying or paying for here?"],
+                    complex:["What is this transaction going to do — what changes for you afterwards, and is it reversible?"] } },
+      { text:"Can weigh the risks and benefits of the decision",
+        questions:{ simple:["Is this something you'd normally spend money on?"],
+                    complex:["What could go wrong here, and how would that affect you day to day — including paying for care later?"] } },
+      { text:"Can resist obvious pressure or exploitation from others",
+        questions:{ simple:["Do you want to do this, or is someone asking you to?"],
+                    complex:["Is there anyone helping you make this decision? What have they said to you about it?"] } }
+    ]
+  },
+  {
+    id:"personal",
+    code:"§5.2",
+    name:"Personal & Health Care (Day-to-Day)",
+    focus:"Everyday decisions about routine, services, contact with others, and general health care — usually assessed informally.",
+    flags:"Formal assessment matters mainly where there's disagreement, or a decision needs to be made for the person by someone else.",
+    test:[
+      { text:"Understands the decision being made and why it is needed",
+        questions:{ simple:["What are we deciding today?"],
+                    complex:["What is being decided here, and why does it need to happen now?"] } },
+      { text:"Understands the reasonably foreseeable consequences of the main options, including doing nothing",
+        questions:{ simple:["What would happen if you said yes, or if you said no?"],
+                    complex:["What do you think would happen if you chose option A, option B, or did nothing at all?"] } },
+      { text:"Can communicate a consistent choice",
+        questions:{ simple:["What would you like to do?"],
+                    complex:["Can you tell me your preference again, and a bit about why?"] } }
+    ]
+  },
+  {
+    id:"medical",
+    code:"§5.3",
+    name:"Consent to Medical Treatment",
+    focus:"Capacity to consent to, or refuse, a specific proposed treatment — assessed by the treating clinician at the point consent is needed.",
+    flags:"Refusing treatment against medical advice is not, by itself, evidence of incapacity. Serious/irreversible decisions warrant a more rigorous — not a different — assessment.",
+    test:[
+      { text:"Understands the nature, purpose, risks and benefits of the treatment",
+        questions:{ simple:["What is this medication or treatment for?"],
+                    complex:["In your own words, what does this treatment involve, and what are the main risks and benefits?"] } },
+      { text:"Understands the alternatives, including the consequence of no treatment",
+        questions:{ simple:["Do you know what happens if you don't have this?"],
+                    complex:["What are the other options, and what might happen if you didn't have this treatment at all?"] } },
+      { text:"Retains this information long enough to decide",
+        questions:{ simple:["Can you tell me again what I just explained?"],
+                    complex:["Can you summarise, in your own words, what we've just discussed?"] } },
+      { text:"Weighs it as part of the decision, and communicates the decision",
+        questions:{ simple:["Are you happy to go ahead today?"],
+                    complex:["What have you decided, and how did you weigh up the risks against the benefits?"] } }
+    ]
+  },
+  {
+    id:"ahd",
+    code:"§5.4",
+    name:"Advance Health Directive",
+    focus:"Capacity to make a document setting future health-care wishes and/or appointing a health attorney, to operate once capacity is lost.",
+    flags:"Because this touches life-and-death decisions, contemporaneous medical input at the time of signing is standard good practice.",
+    test:[
+      { text:"Understands the nature and consequences of the specific directions given",
+        questions:{ simple:["Do you understand this is about your future care?"],
+                    complex:["What are you asking to happen — or not happen — if you become seriously unwell, and what could that mean for how long you live?"] } },
+      { text:"Understands the directive only operates once they lack capacity for that decision",
+        questions:{ simple:["Is this about today, or about the future?"],
+                    complex:["When would this document actually come into effect?"] } },
+      { text:"Understands they can change or revoke it while they still have capacity",
+        questions:{ simple:["Can you change your mind about this later?"],
+                    complex:["How and when could you change or cancel this later, while you're still able to?"] } },
+      { text:"Understands the scope of authority given to any appointed attorney",
+        questions:{ simple:["Who do you want deciding for you?"],
+                    complex:["If you're appointing someone, exactly what will they be allowed to decide on your behalf?"] } }
+    ]
+  },
+  {
+    id:"will",
+    code:"§5.5",
+    name:"Testamentary Capacity (Wills)",
+    focus:"Capacity to make or change a valid will — the long-standing Banks v Goodfellow common-law test.",
+    flags:"The 'Golden Rule': where there's any doubt (age, illness, a will that departs from expectation, a beneficiary heavily involved), get a contemporaneous medical capacity opinion at the time of signing.",
+    test:[
+      { text:"Understands that they are making a will and its effect",
+        questions:{ simple:["Can you tell me what this document is?"],
+                    complex:["What does making a will actually do, and when does it take effect?"] } },
+      { text:"Understands, in general terms, the nature and extent of the property being disposed of",
+        questions:{ simple:["What do you own, roughly?"],
+                    complex:["Can you describe, in broad terms, everything you own — house, savings, other property?"] } },
+      { text:"Understands and can appreciate the claims they ought to give effect to",
+        questions:{ simple:["Who do you want to leave things to?"],
+                    complex:["Who would normally be expected to benefit, and how does this will treat each of them?"] } },
+      { text:"Is not affected by a delusion or disorder distorting the disposal of their property",
+        questions:{ simple:["Is there anyone you don't want to include?"],
+                    complex:["Is there anyone you're deliberately leaving out, and can you explain your reasons?"] } }
+    ]
+  },
+  {
+    id:"epoa",
+    code:"§5.6",
+    name:"EPOA Appointment Capacity",
+    focus:"A distinct, specifically defined test (s41 Powers of Attorney Act 1998 Qld) — separate from capacity to manage the underlying finances or health decisions day to day.",
+    flags:"This is a lower, more specific threshold than general financial/health capacity. Exclude the proposed attorney from the capacity conversation. Watch for coercion or prompting. Document reasoning, not just a conclusion.",
+    test:[
+      { text:"Understands they are choosing who will make decisions for them, and when that power starts",
+        questions:{ simple:["Who are you choosing to be your attorney, and why that person?"],
+                    complex:["When exactly would this person's power start — immediately, or only once you can't decide for yourself? Has anyone told you what to say today?"] } },
+      { text:"Understands the attorney will have full power to do anything they could lawfully do, unless restricted",
+        questions:{ simple:["What will they be able to do?"],
+                    complex:["Once they have the power, what will they be able to do — can you describe it in your own words?"] } },
+      { text:"Understands they can put conditions or restrictions on the power",
+        questions:{ simple:["Do you want to limit what they can do?"],
+                    complex:["Have you put any limits or conditions on what they can do?"] } },
+      { text:"Understands the power continues even if they later lose capacity ('enduring')",
+        questions:{ simple:["Does this keep working if you get very unwell?"],
+                    complex:["Does this power keep operating even if you later lose the ability to make decisions yourself?"] } },
+      { text:"Understands that once capacity is lost, they cannot revoke it themselves — only a tribunal can intervene",
+        questions:{ simple:["Could you cancel this later if you needed to?"],
+                    complex:["If you later couldn't think clearly, could you cancel this yourself? What would happen instead?"] } },
+      { text:"Understands they may revoke the power any time while they still have capacity",
+        questions:{ simple:["Can you change your mind about this right now?"],
+                    complex:["Right now, while you're well, could you change your mind and revoke this? How would you do it?"] } }
+    ]
+  },
+  {
+    id:"contract",
+    code:"§5.7",
+    name:"Contractual Capacity",
+    focus:"Capacity to enter a legally binding agreement — leases, purchases, business contracts.",
+    flags:"Courts look at both the person's understanding and what the counterparty knew or ought to have known.",
+    test:[
+      { text:"Understands the general nature of the transaction",
+        questions:{ simple:["What are you agreeing to here?"],
+                    complex:["What are you agreeing to here, in detail, in your own words?"] } },
+      { text:"Understands its general effects and obligations",
+        questions:{ simple:["What do you get, and what do you have to do?"],
+                    complex:["What do you have to do under this agreement, what do you get in return, and what happens if you don't keep up your side?"] } },
+      { text:"Whether the other party knew or ought to have known of any incapacity is also legally relevant",
+        questions:{ simple:["Are you happy to sign this today?"],
+                    complex:["How long does this arrangement last, and how would you get out of it early?"] } }
+    ]
+  },
+  {
+    id:"litigation",
+    code:"§5.8",
+    name:"Litigation Capacity",
+    focus:"Capacity to instruct a lawyer and participate in legal proceedings, including decisions like whether to settle.",
+    flags:"If lacking, a litigation guardian / next friend may need to be appointed to conduct proceedings on the person's behalf.",
+    test:[
+      { text:"Understands, in broad terms, the nature of the proceedings",
+        questions:{ simple:["What is this case about, as you understand it?"],
+                    complex:["What is this case about, and what are the main choices you have — for example settling versus continuing to trial?"] } },
+      { text:"Understands the key choices to be made",
+        questions:{ simple:["What are you asking your lawyer to do?"],
+                    complex:["What are the likely costs, timeframes, and risks of each option, as far as you understand?"] } },
+      { text:"Can give coherent, consistent instructions",
+        questions:{ simple:["Is there anything about this you're unsure of?"],
+                    complex:["Can you tell me again, in your own words, what you've decided to instruct, and why?"] } }
+    ]
+  },
+  {
+    id:"accommodation",
+    code:"§5.9",
+    name:"Accommodation / Where to Live",
+    focus:"Decisions about remaining at home, moving in with family, or entering residential care.",
+    flags:"One of the most commonly disputed domains between family and the person concerned. An unwise but understood risk is not incapacity.",
+    test:[
+      { text:"Understands the choice being made",
+        questions:{ simple:["Where would you prefer to live?"],
+                    complex:["Where would you prefer to live, and why?"] } },
+      { text:"Understands the general risks and benefits of each option, including risks of remaining at home",
+        questions:{ simple:["Are you happy with things as they are?"],
+                    complex:["What do you think could go wrong if you stayed at home versus moving?"] } },
+      { text:"Can communicate a preference",
+        questions:{ simple:["What matters most to you about where you live?"],
+                    complex:["If your situation got harder to manage, what would you want to happen next?"] } }
+    ]
+  },
+  {
+    id:"voting",
+    code:"§5.10",
+    name:"Capacity to Vote",
+    focus:"Generally a very low threshold, kept legally distinct from other domains.",
+    flags:"Having a guardian or administrator appointed does not, by itself, remove the right to vote in most Australian jurisdictions.",
+    test:[
+      { text:"Understands, in broad terms, the nature and significance of voting",
+        questions:{ simple:["Do you know an election is coming up?"],
+                    complex:["What happens at an election, and how do you decide who to vote for?"] } }
+    ]
+  }
+];
+
+const rail = document.getElementById('rail');
+const pageInner = document.getElementById('pageInner');
+const toastEl = document.getElementById('toast');
+const state = {}; // per-domain: {checks:[bool], notes:''}
+
+DOMAINS.forEach(d => state[d.id] = {checks: d.test.map(()=>false), notes:''});
+
+function showToast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>toastEl.classList.remove('show'), 1800);
+}
+
+function buildRail(activeId){
+  rail.innerHTML = '';
+  const refTab = document.createElement('button');
+  refTab.className = 'tab' + (activeId==='ref' ? ' active':'');
+  refTab.innerHTML = `<span class="code">§0</span><span>Quick reference — all domains</span>`;
+  refTab.onclick = () => render('ref');
+  rail.appendChild(refTab);
+
+  DOMAINS.forEach(d=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (activeId===d.id ? ' active':'');
+    b.innerHTML = `<span class="code">${d.code}</span><span>${d.name}</span>`;
+    b.onclick = () => render(d.id);
+    rail.appendChild(b);
+  });
+}
+
+function renderDomain(d){
+  const s = state[d.id];
+  const checkedCount = s.checks.filter(Boolean).length;
+  const total = s.checks.length;
+  const badge = checkedCount === total && total>0
+    ? `<div class="status-badge"><span class="dot"></span>All elements affirmed — supports capacity for this decision</div>`
+    : `<div class="status-badge warn"><span class="dot"></span>${checkedCount}/${total} elements affirmed — review before concluding</div>`;
+
+  pageInner.innerHTML = `
+    <div class="domain-head">
+      <h2>${d.name}</h2>
+      <div class="domain-code">${d.code}</div>
+    </div>
+    <p class="focus-line">${d.focus}</p>
+    ${badge}
+
+    <h3 class="sec">Capacity test — tick each element you're satisfied is met</h3>
+    <div class="elem-list" id="elemList"></div>
+
+    <textarea class="notes" id="notesArea" placeholder="Notes — the person's own words, supports used, reasoning...">${s.notes}</textarea>
+
+    <div class="actions">
+      <button class="act" id="copyBtn">Copy summary</button>
+      <button class="act ghost" id="resetBtn">Reset this page</button>
+    </div>
+
+    <p class="note-flag">${d.flags}</p>
+  `;
+
+  const elemList = document.getElementById('elemList');
+  d.test.forEach((el,i)=>{
+    const card = document.createElement('div');
+    card.className = 'elem-card';
+    card.innerHTML = `
+      <label class="elem-head">
+        <input type="checkbox" ${s.checks[i] ? 'checked':''}>
+        <span class="elem-num">${i+1}</span>
+        <span class="elem-text">${el.text}</span>
+      </label>
+      <div class="elem-questions">
+        <div class="eq-tier">
+          <div class="eq-tier-label">Simple decision</div>
+          <ul class="eq-list">${el.questions.simple.map(q=>`<li>${q}</li>`).join('')}</ul>
+        </div>
+        <div class="eq-tier">
+          <div class="eq-tier-label complex">Complex decision</div>
+          <ul class="eq-list">${el.questions.complex.map(q=>`<li>${q}</li>`).join('')}</ul>
+        </div>
+      </div>
+    `;
+    card.querySelector('input').addEventListener('change', e=>{
+      state[d.id].checks[i] = e.target.checked;
+      renderDomain(d);
+    });
+    elemList.appendChild(card);
+  });
+
+  document.getElementById('notesArea').addEventListener('input', e=>{
+    state[d.id].notes = e.target.value;
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    state[d.id] = {checks: d.test.map(()=>false), notes:''};
+    renderDomain(d);
+    showToast('Page reset');
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
+    const lines = [
+      `CAPACITY ASSESSMENT — ${d.name} (${d.code})`,
+      ''
+    ];
+    d.test.forEach((el,i)=>{
+      lines.push(`  ${i+1}. [${state[d.id].checks[i]?'x':' '}] ${el.text}`);
+      lines.push(`     Simple:  ${el.questions.simple.join(' / ')}`);
+      lines.push(`     Complex: ${el.questions.complex.join(' / ')}`);
+    });
+    lines.push('', `Notes: ${state[d.id].notes || '(none recorded)'}`, '', 'General reference only — not a legal or medical determination.');
+    const text = lines.join('\n');
+    navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{
+      showToast('Summary copied to clipboard');
+    }).catch(()=>{
+      showToast('Could not copy — select and copy manually');
+    });
+  });
+}
+
+function renderRef(){
+  pageInner.innerHTML = `
+    <div class="domain-head">
+      <h2>Quick reference — all domains</h2>
+      <div class="domain-code">§0</div>
+    </div>
+    <p class="focus-line">Core focus of the test, by domain. Select a tab on the left for the full test elements and example questions.</p>
+    <table class="ref-table">
+      <thead><tr><th>Domain</th><th>Core focus</th></tr></thead>
+      <tbody>
+        ${DOMAINS.map(d=>`<tr><td class="dm">${d.name}</td><td>${d.focus}</td></tr>`).join('')}
+      </tbody>
+    </table>
+    <p class="note-flag">General reference tool only — not legal or medical advice. Model framework: Powers of Attorney Act 1998 (Qld) &amp; Guardianship and Administration Act 2000 (Qld). Check equivalent legislation in your own jurisdiction.</p>
+  `;
+}
+
+function render(id){
+  buildRail(id);
+  if(id === 'ref'){ renderRef(); return; }
+  const d = DOMAINS.find(x=>x.id===id);
+  renderDomain(d);
+}
+
+render('epoa');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Falls &amp; Bone Health Toolkit</title>
+<style>
+:root{--ink:#17252d;--blue:#28566b;--pale:#edf5f7;--line:#cbd7dc;--warn:#fff6df}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f3f6f7;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}main{max-width:1050px;margin:30px auto;background:#fff;padding:42px;border-radius:14px;box-shadow:0 8px 28px #1232}h1{margin:0;color:#173f51}h2{color:var(--blue);margin-top:32px}.lead{color:#536872}.notice{background:var(--warn);border-left:5px solid #d39b27;padding:14px 16px;margin:22px 0}.nav{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}.nav a,button,.button{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:6px;padding:8px 12px;text-decoration:none;font-weight:650;cursor:pointer}.card{border:1px solid var(--line);border-radius:10px;padding:20px;margin:18px 0;scroll-margin-top:16px}.checks label{display:block;padding:7px 0;border-bottom:1px solid #e8edef}.checks label:last-child{border:0}input{width:1.05rem;height:1.05rem;vertical-align:middle;margin-right:7px}.result{margin-top:14px;padding:12px 14px;background:var(--pale);border-left:5px solid var(--blue);min-height:48px}.small{font-size:.9rem;color:#596c75}.urgent{background:#fff0f0;border-left-color:#ad2c2c}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}.secondary{background:#687b84}table.ref{width:100%;border-collapse:collapse;font-size:.88rem;margin:14px 0}table.ref th,table.ref td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}table.ref th{background:var(--pale);color:#173f51;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em}table.ref tr:nth-child(even) td{background:#fafcfc}@media print{body{background:#fff}main{box-shadow:none;margin:0;max-width:none}.nav,.actions,.button{display:none}.card{break-inside:avoid}}@media(max-width:650px){main{margin:0;padding:22px 16px;border-radius:0}table.ref{display:block;overflow-x:auto;white-space:nowrap}}
+</style></head><body><main>
+<h1 id="top">Falls &amp; Bone Health Toolkit</h1><p class="lead">Multifactorial falls-risk assessment and secondary fracture-prevention pathway.</p>
+<div class="notice"><strong>Important:</strong> These checklists structure a multifactorial assessment; they do not replace it. Any older person presenting after a fall, or with ≥2 falls in 12 months, an injurious fall, or a gait/balance concern warrants full multifactorial assessment regardless of individual module scores below.</div>
+<nav class="nav" id="nav"></nav><div id="modules"></div>
+<div class="actions"><button onclick="window.print()">Print completed page</button><button class="secondary" id="reset">Clear all</button></div>
+<h2>Practical pathway</h2>
+<table class="ref">
+<tr><th>Step</th><th>Detail</th></tr>
+<tr><td>1 · Screen</td><td>Ask about falls in the past 12 months at every review; a single fall with injury, or ≥2 falls, or a gait/balance complaint triggers full assessment.</td></tr>
+<tr><td>2 · Multifactorial assessment</td><td>History, gait/balance/strength exam, postural BP, vision, cognition, footwear, medication review, home hazard review.</td></tr>
+<tr><td>3 · Targeted intervention</td><td>Individualised — not a generic exercise handout. Strength/balance program (physiotherapy), medication deprescribing, vitamin D if deficient, vision/hearing correction, home modification (OT), cardiac work-up if syncope/arrhythmia suspected.</td></tr>
+<tr><td>4 · Bone health</td><td>Any fragility fracture (fall from standing height or less) triggers osteoporosis work-up regardless of DEXA timing — treat the fracture as diagnostic of high risk pending formal assessment.</td></tr>
+<tr><td>5 · Review</td><td>Reassess falls frequency/severity and functional trajectory at follow-up; falls risk is dynamic, not a one-off label.</td></tr>
+</table>
+<h2>Reference: fracture risk factors independent of BMD</h2>
+<table class="ref">
+<tr><th>Category</th><th>Factors</th></tr>
+<tr><td>Non-modifiable</td><td>Age, female sex, prior fragility fracture, parental hip fracture history, early menopause, previous long-term corticosteroid use, rheumatoid arthritis, other secondary osteoporosis causes</td></tr>
+<tr><td>Modifiable</td><td>Low BMI, smoking, alcohol excess, low calcium/vitamin D intake, physical inactivity, falls risk itself</td></tr>
+<tr><td>Secondary causes to exclude</td><td>Hyperthyroidism, hyperparathyroidism, hypogonadism, malabsorption/coeliac disease, chronic kidney disease, myeloma, long-term corticosteroids, other bone-active medications</td></tr>
+</table>
+<p class="small">Guide only — not a protocol. Confirm current local falls-prevention and osteoporosis-treatment guidelines before clinical use. No patient information entered here is stored or transmitted.</p>
+</main><script>
+const modules=[];
+modules.push({id:'history',title:'Falls history',note:'Ask at every review, not only after a witnessed fall.',items:[
+  'Number of falls in the past 12 months','Circumstances of the worst/most recent fall (trip vs collapse vs slip)',
+  {t:'Injury sustained (fracture, head injury, soft tissue, long lie >1 hour)',flag:true},
+  'Preceding symptoms — dizziness, palpitations, loss of consciousness, vertigo',
+  'Fear of falling / activity avoidance since last fall','Time of day and location pattern (nocturnal, bathroom, outdoors)'
+],rule:(n,a)=>{
+  if(a[2]) return 'Injurious fall — full multifactorial assessment and same-visit falls-prevention plan indicated regardless of other findings.';
+  return n>=2 ? 'Falls history present — proceed through remaining modules for a full multifactorial assessment.' : 'Limited falls history on this pass; continue screening at each review.';
+}});
+modules.push({id:'exam',title:'Gait, balance and strength',note:'Perform, don’t just ask.',items:[
+  {t:'Timed Up and Go — record seconds',field:true,placeholder:'sec'},
+  'Gait observed — unsteady, shuffling, freezing, wide-based, or asymmetric',
+  '4-Stage Balance Test performed','Lower-limb strength grossly reduced on exam',
+  'Mobility aid used, or clinically indicated but not yet provided'
+],rule:(n,a)=>{
+  return 'Document findings above. A Timed Up and Go over 12 seconds, or any observed gait/balance abnormality, supports referral for a structured strength/balance program.';
+}});
+modules.push({id:'cardio',title:'Cardiovascular / syncope screen',note:'Relevant when collapse, loss of consciousness, or unexplained falls are described.',items:[
+  {t:'Orthostatic BP — lying then standing at 1 and 3 minutes performed',field:true,placeholder:'result'},
+  {t:'Orthostatic drop present (≥20 mmHg systolic or ≥10 mmHg diastolic)',flag:true},
+  'Arrhythmia suspected or found on exam/ECG','Carotid sinus hypersensitivity suspected (falls with head-turning/collar pressure)',
+  'Situational triggers (micturition, cough, prolonged standing, post-prandial)'
+],rule:(n,a)=>a[1] ? 'Orthostatic hypotension confirmed — review causative medications, hydration, and consider non-pharmacological measures before drug therapy for the hypotension itself.' : (n>=2 ? 'Cardiovascular contributors plausible — ECG and further cardiac work-up indicated.' : 'No strong cardiovascular pattern selected on this screen.')});
+modules.push({id:'meds',title:'Medication review',note:'Cross-reference with the Deprescribing tool for a systematic STOPP/START pass.',items:[
+  {t:'≥4 regular medications',field:false},
+  'Sedatives, hypnotics or benzodiazepines','Antipsychotics','Opioids',
+  'Antihypertensives — especially recent dose increase','Anticholinergic burden present',
+  'Hypoglycaemic agents with risk of hypoglycaemia'
+],rule:n=>n>=2 ? 'Falls-risk medication burden present — review each agent’s ongoing indication; deprescribe or dose-adjust where safe to do so.' : 'Limited falls-risk medication burden identified on this screen.'});
+modules.push({id:'other',title:'Vision, footwear and environment',note:'Frequently under-assessed contributors.',items:[
+  'Vision not corrected/reviewed in >12 months','Footwear inappropriate (loose, high heel, no grip, walking in socks)',
+  'Home hazards reported (loose rugs, poor lighting, clutter, no rails on stairs/bathroom)',
+  'Bathroom identified as fall location — grab rails / non-slip surface not in place',
+  'Pet or trip-hazard risk in the home'
+],rule:n=>n>=2 ? 'Environmental/sensory contributors present — vision review and occupational therapy home assessment indicated.' : 'Limited environmental contributors identified on this screen; consider occupational therapy review if any doubt.'});
+modules.push({id:'bone',title:'Bone health / fracture risk',note:'Any fragility fracture is itself an indication to proceed with osteoporosis assessment.',items:[
+  {t:'Prior fragility fracture (fall from standing height or less)',flag:true},
+  'Age >65 (female) or >70 (male) with additional risk factors',
+  'Long-term corticosteroid use (current or past ≥3 months)',
+  'Family history of hip fracture','Low body weight / BMI <20','Current smoker or high alcohol intake',
+  'Known secondary cause of osteoporosis (hyperthyroidism, hyperparathyroidism, malabsorption, CKD, myeloma, hypogonadism)'
+],rule:(n,a)=>a[0] ? 'Fragility fracture present — proceed with osteoporosis work-up (DEXA, secondary-cause bloods, vitamin D/calcium) and treatment consideration regardless of other risk factors; coordinate with orthogeriatric pathway if fracture is recent.' : (n>=2 ? 'Risk-factor burden supports DEXA and secondary-cause screening.' : 'Limited bone-health risk factors identified on this screen.')});
+
+const nav=document.querySelector('#nav'),host=document.querySelector('#modules');
+modules.forEach(m=>{nav.insertAdjacentHTML('beforeend','<a href="#'+m.id+'">'+m.title+'</a>');host.insertAdjacentHTML('beforeend','<section class="card" id="'+m.id+'"><h2>'+m.title+'</h2><p class="small">'+m.note+'</p><div class="checks">'+m.items.map((x,i)=>{
+  const it = typeof x==='string' ? {t:x} : x;
+  const field = it.field ? '<input type="text" class="fieldinput" data-i="'+i+'" placeholder="'+(it.placeholder||'')+'" style="width:70px;margin-left:8px;border:1px solid var(--line);border-radius:5px;padding:3px 6px;">' : '';
+  return '<label><input type="checkbox" data-i="'+i+'">'+it.t+field+'</label>';
+}).join('')+'</div><div class="result" aria-live="polite">Select applicable findings.</div><p><a class="button" href="#top">↑ Return to toolkit menu</a></p></section>')});
+function update(card,m){const a=[...card.querySelectorAll('input[type=checkbox]')].map(x=>x.checked),n=a.filter(Boolean).length,r=m.rule(n,a);const res=card.querySelector('.result');res.innerHTML='<strong>'+r+'</strong><br>'+n+' of '+a.length+' findings selected.';res.classList.toggle('urgent', /fragility fracture present|injurious fall|hypotension confirmed/i.test(r));}
+modules.forEach(m=>{const c=document.querySelector('#'+m.id);c.querySelectorAll('input[type=checkbox]').forEach(x=>x.addEventListener('change',()=>update(c,m)))});
+document.querySelector('#reset').addEventListener('click',()=>{document.querySelectorAll('input').forEach(x=>{if(x.type==='checkbox')x.checked=false; else x.value='';});document.querySelectorAll('.result').forEach(x=>{x.textContent='Select applicable findings.';x.classList.remove('urgent')})});
+</script></body></html>

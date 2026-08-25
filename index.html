@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rhymie's Guide to Geriatric Medicine</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#173f51">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rhymie's Geri Guide">
+<style>
+  :root{
+    --ink:#17252d; --blue:#28566b; --blue-dark:#173f51; --pale:#edf5f7;
+    --line:#cbd7dc; --bg:#f3f6f7; --accent:#5ac8a8;
+    --wall-1:#081b29; --wall-2:#0e2f45; --wall-3:#1c4d68; --wall-4:#2c7091;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0; background:var(--wall-1); color:var(--ink);
+    font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex; flex-direction:column;
+    height:100dvh; overflow:hidden;
+  }
+  header{
+    position:relative; z-index:5; color:#fff;
+    background:rgba(8,27,41,.55);
+    backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%);
+    border-bottom:1px solid rgba(255,255,255,.09);
+    padding:calc(10px + env(safe-area-inset-top)) 16px 12px;
+    flex:0 0 auto;
+  }
+  header h1{
+    margin:0; font-size:1.08rem; font-weight:800; letter-spacing:-.01em;
+    display:flex; align-items:center; gap:9px;
+  }
+  header h1 .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--accent);flex:0 0 auto;
+    box-shadow:0 0 0 3px rgba(90,200,168,.25);
+  }
+  header .tagline{margin:3px 0 0 18px; font-size:.78rem; color:#a9c3ce; letter-spacing:.01em;}
+
+  /* --- tool bar (shown when a tool is open) --- */
+  .toolbar{
+    display:none; align-items:center; gap:10px; position:relative; z-index:5;
+    padding:calc(8px + env(safe-area-inset-top)) 12px 8px;
+    background:rgba(8,27,41,.92); color:#fff; flex:0 0 auto;
+    border-bottom:1px solid rgba(255,255,255,.09);
+  }
+  .toolbar.show{display:flex;}
+  .toolbar button.back{
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); color:#fff;
+    border-radius:8px; padding:7px 11px; font-size:.85rem; font-weight:700; cursor:pointer;
+    display:flex; align-items:center; gap:5px; flex:0 0 auto;
+  }
+  .toolbar button.back:active{background:rgba(255,255,255,.26);}
+  .toolbar .ttitle{font-size:.92rem; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+  main{flex:1 1 auto; position:relative; min-height:0; overflow:hidden;}
+
+  /* --- home screen: wallpaper --- */
+  #home{
+    position:absolute; inset:0; overflow-y:auto; -webkit-overflow-scrolling:touch; display:none;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,.075) 1px, transparent 0) 0 0/26px 26px,
+      radial-gradient(1100px 620px at 12% -8%, rgba(90,200,168,.20), transparent 60%),
+      radial-gradient(1000px 780px at 105% 0%, rgba(60,145,180,.35), transparent 58%),
+      linear-gradient(160deg, var(--wall-1) 0%, var(--wall-2) 38%, var(--wall-3) 72%, var(--wall-4) 100%);
+    background-attachment:fixed;
+  }
+  #home.show{display:block;}
+  .home-inner{max-width:760px; margin:0 auto; padding:18px 14px calc(28px + env(safe-area-inset-bottom));}
+  .featured{
+    position:relative; overflow:hidden;
+    display:flex; align-items:center; gap:14px;
+    background:linear-gradient(135deg,#123f56,#1c6a86 65%,#2a8fa8);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:18px; padding:19px; margin:4px 0 26px; cursor:pointer; width:100%;
+    text-align:left; font:inherit;
+    box-shadow:0 16px 36px rgba(4,20,32,.4);
+  }
+  .featured::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(220px 160px at 88% -20%, rgba(255,255,255,.22), transparent 65%);
+  }
+  .featured:active{transform:translateY(1px);}
+  .featured .icon{
+    font-size:1.9rem; flex:0 0 auto; width:48px; height:48px; display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.16); border-radius:13px; border:1px solid rgba(255,255,255,.18);
+  }
+  .featured .ftitle{font-weight:800; font-size:1.04rem; margin:0 0 3px; letter-spacing:-.005em;}
+  .featured .fdesc{font-size:.82rem; color:#dcf0f2; margin:0; line-height:1.4;}
+  .cat{margin-bottom:24px;}
+  .cat h2{
+    font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.09em;
+    color:rgba(255,255,255,.68); margin:0 0 11px 2px; text-shadow:0 1px 3px rgba(0,0,0,.2);
+  }
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:11px;}
+  .card{
+    background:rgba(252,253,254,.97); border:1px solid rgba(255,255,255,.5); border-radius:15px; padding:14px 12px;
+    text-align:left; cursor:pointer; font:inherit; color:var(--ink);
+    display:flex; flex-direction:column; gap:6px; min-height:108px;
+    box-shadow:0 10px 24px rgba(4,18,28,.22), 0 1px 2px rgba(4,18,28,.06);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:active{transform:translateY(1px) scale(.985); box-shadow:0 6px 14px rgba(4,18,28,.2);}
+  @media (hover:hover){ .card:hover{transform:translateY(-2px); box-shadow:0 16px 30px rgba(4,18,28,.28);} }
+  .card .icon{font-size:1.5rem;}
+  .card .ctitle{font-weight:700; font-size:.86rem; line-height:1.25;}
+  .card .cdesc{font-size:.72rem; color:#5e727a; line-height:1.3; flex:1;}
+
+  iframe.toolframe{
+    position:absolute; inset:0; width:100%; height:100%;
+    border:0; background:#fff; display:none;
+  }
+  iframe.toolframe.active{display:block;}
+
+  .install-hint{
+    flex:0 0 auto; background:rgba(8,27,41,.92); color:#dcebee;
+    font-size:.76rem; text-align:center; padding:7px 10px;
+    border-top:1px solid rgba(255,255,255,.09); display:none;
+  }
+  .install-hint.show{display:block;}
+  .install-hint button{
+    background:none; border:none; color:var(--accent); font-weight:700;
+    text-decoration:underline; cursor:pointer; font-size:.76rem; padding:0; margin-left:4px;
+  }
+</style>
+</head>
+<body>
+
+<header id="mainHeader">
+  <h1><span class="dot"></span>Rhymie's Guide to Geriatric Medicine</h1>
+  <p class="tagline">Personal clinical reference &amp; decision-support toolkit</p>
+</header>
+
+<div class="toolbar" id="toolbar">
+  <button class="back" id="backBtn">&larr; Home</button>
+  <span class="ttitle" id="toolbarTitle"></span>
+</div>
+
+<main id="main">
+  <div id="home">
+    <div class="home-inner" id="homeInner"></div>
+  </div>
+</main>
+
+<div class="install-hint" id="installHint">
+  Tip: add this to your home screen for one-tap access — browser menu → "Add to Home screen".
+  <button id="dismissHint">Got it</button>
+</div>
+
+<script>
+const TOOLS = [
+  { id:'companion',   label:'Clinic Companion',    file:'tools/clinic-companion.html',    icon:'🩺', cat:'featured', desc:'Full CGA visit companion — history, exam, investigations, formulation & plan across every domain.' },
+
+  { id:'ncdalgo',     label:'NCD Diagnostic Algorithm', file:'tools/ncd-diagnostic-algorithm.html', icon:'📘', cat:'cognition', desc:'Full DSM-5-TR–aligned diagnostic pathway — history, work-up, red flags, subtyping, comparative reference.' },
+  { id:'ncdflow',     label:'NCD Quick Flowchart', file:'tools/ncd-quick-reference.html',   icon:'🗺️', cat:'cognition', desc:'Condensed step-by-step bedside version of the diagnostic algorithm.' },
+  { id:'subtype',     label:'Subtype Toolkit',     file:'tools/dementia-toolkit.html',      icon:'🧠', cat:'cognition', desc:'Diagnostic-criteria checklists for AD, DLB, bvFTD, PPA, vascular, PSP, CBS, NPH, HD, RPD.' },
+  { id:'cogtests',    label:'Cognitive Tests',     file:'tools/cognitive-tests.html',        icon:'📝', cat:'cognition', desc:'Screening test selection, cut-offs and subtype interpretation patterns.' },
+  { id:'patterns',    label:'Pattern Summary',     file:'tools/pattern-summary.html',        icon:'🔎', cat:'cognition', desc:'Fast differential by cognitive/behavioural pattern.' },
+  { id:'heatmap',     label:'Types Heat-map',      file:'tools/types-heatmap.html',          icon:'🌡️', cat:'cognition', desc:'Feature-by-subtype heat-map at a glance.' },
+  { id:'expheatmap',  label:'Expanded Heat-map',   file:'tools/expanded-heatmap.html',       icon:'📊', cat:'cognition', desc:'Extended heat-map — more subtypes and features.' },
+  { id:'meds',        label:'Dementia Medications',file:'tools/dementia-medications.html',   icon:'💊', cat:'cognition', desc:'ChEI/memantine and BPSD pharmacotherapy comparison, PBS criteria.' },
+
+  { id:'falls',       label:'Falls & Bone Health', file:'tools/falls-bone-health.html',      icon:'🦴', cat:'general', desc:'Multifactorial falls-risk assessment and bone-health pathway.' },
+  { id:'deprescribing',label:'Deprescribing',      file:'tools/deprescribing.html',          icon:'💊', cat:'general', desc:'STOPP/START v3 and Beers-guided medication review workflow.' },
+  { id:'frailty',     label:'Frailty Assessment',  file:'tools/frailty.html',                icon:'🧓', cat:'general', desc:'Clinical Frailty Scale and Fried phenotype with interpretation.' },
+  { id:'delirium',    label:'Delirium (4AT)',      file:'tools/delirium-4at.html',           icon:'⚡', cat:'general', desc:'4AT screening with interpretation and work-up prompts.' },
+  { id:'capacity',    label:'Capacity Register',   file:'tools/capacity-register.html',      icon:'⚖️', cat:'general', desc:'Structured decision-specific capacity assessment across ten domains.' },
+
+  { id:'grandround',  label:'Grand Round Roulette',file:'tools/grand-round-roulette.html',   icon:'🎲', cat:'teaching', desc:'Randomised teaching-case picker.' }
+];
+
+const CATS = [
+  { key:'cognition', label:'Cognition & Dementia' },
+  { key:'general',   label:'General Geriatrics' },
+  { key:'teaching',  label:'Teaching' }
+];
+
+const homeInner = document.getElementById('homeInner');
+const homeEl = document.getElementById('home');
+const mainEl = document.getElementById('main');
+const toolbar = document.getElementById('toolbar');
+const toolbarTitle = document.getElementById('toolbarTitle');
+const mainHeader = document.getElementById('mainHeader');
+const loadedFrames = {};
+let activeId = null;
+
+function buildHome(){
+  const featured = TOOLS.find(t=>t.cat==='featured');
+  let html = '';
+  if (featured){
+    html += `<button class="featured" data-id="${featured.id}">
+      <span class="icon">${featured.icon}</span>
+      <span>
+        <p class="ftitle">${featured.label}</p>
+        <p class="fdesc">${featured.desc}</p>
+      </span>
+    </button>`;
+  }
+  CATS.forEach(cat=>{
+    const items = TOOLS.filter(t=>t.cat===cat.key);
+    if (!items.length) return;
+    html += `<div class="cat"><h2>${cat.label}</h2><div class="grid">`;
+    items.forEach(t=>{
+      html += `<button class="card" data-id="${t.id}">
+        <span class="icon">${t.icon}</span>
+        <span class="ctitle">${t.label}</span>
+        <span class="cdesc">${t.desc}</span>
+      </button>`;
+    });
+    html += `</div></div>`;
+  });
+  homeInner.innerHTML = html;
+  homeInner.querySelectorAll('[data-id]').forEach(el=>{
+    el.addEventListener('click', ()=> openTool(el.getAttribute('data-id')));
+  });
+}
+
+function showHome(){
+  activeId = null;
+  homeEl.classList.add('show');
+  Object.values(loadedFrames).forEach(f=>f.classList.remove('active'));
+  toolbar.classList.remove('show');
+  mainHeader.style.display = '';
+  history.replaceState(null, '', '#home');
+}
+
+function openTool(id){
+  const tool = TOOLS.find(t=>t.id===id);
+  if (!tool) return showHome();
+  activeId = id;
+  homeEl.classList.remove('show');
+  mainHeader.style.display = 'none';
+  toolbar.classList.add('show');
+  toolbarTitle.textContent = tool.icon + ' ' + tool.label;
+
+  Object.values(loadedFrames).forEach(f=>f.classList.remove('active'));
+  if (!loadedFrames[id]){
+    const frame = document.createElement('iframe');
+    frame.className = 'toolframe';
+    frame.src = tool.file;
+    frame.title = tool.label;
+    mainEl.appendChild(frame);
+    loadedFrames[id] = frame;
+  }
+  loadedFrames[id].classList.add('active');
+  history.replaceState(null, '', '#'+id);
+}
+
+document.getElementById('backBtn').addEventListener('click', showHome);
+
+buildHome();
+
+const startId = (location.hash || '').replace('#','');
+if (startId && startId !== 'home' && TOOLS.some(t=>t.id===startId)){
+  openTool(startId);
+} else {
+  showHome();
+}
+
+window.addEventListener('hashchange', ()=>{
+  const id = (location.hash || '').replace('#','');
+  if (!id || id === 'home'){ if (activeId) showHome(); }
+  else if (id !== activeId && TOOLS.some(t=>t.id===id)) openTool(id);
+});
+
+// Standalone-mode detection + install hint (only shown when running as a normal browser tab)
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if(!isStandalone && !localStorage.getItem('hideInstallHint')){
+  document.getElementById('installHint').classList.add('show');
+}
+document.getElementById('dismissHint').addEventListener('click', ()=>{
+  document.getElementById('installHint').classList.remove('show');
+  localStorage.setItem('hideInstallHint','1');
+});
+
+// Offline support
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

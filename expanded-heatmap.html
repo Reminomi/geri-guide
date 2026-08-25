@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expanded Dementia Hallmark Heatmap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="light"] {
+      --color-bg:#f7f6f2; --color-surface:#fbfaf7; --color-surface-2:#f2efe9; --color-surface-3:#ebe7e0;
+      --color-border:#d6d1c8; --color-divider:#e1ddd6; --color-text:#26231d; --color-text-muted:#6c685f; --color-text-faint:#9e998e;
+      --color-primary:#0b6b70; --color-primary-2:#174e52; --color-chip:#e6f0ef;
+      --color-zero:#fff7ec; --color-one:#fdd49e; --color-two:#fc8d59; --color-three:#b30000;
+      --shadow-sm:0 2px 8px rgba(30,24,15,0.06); --shadow-md:0 12px 32px rgba(30,24,15,0.08);
+      --radius-lg:24px; --font-body:'Inter', system-ui, sans-serif; --font-display:'Source Serif 4', Georgia, serif;
+    }
+    [data-theme="dark"] {
+      --color-bg:#171614; --color-surface:#1e1c19; --color-surface-2:#25231f; --color-surface-3:#2c2924;
+      --color-border:#3a3732; --color-divider:#312e29; --color-text:#ece7de; --color-text-muted:#b3ada3; --color-text-faint:#867f74;
+      --color-primary:#69aab0; --color-primary-2:#b7d7db; --color-chip:#213033;
+      --color-zero:#3b3127; --color-one:#8d5d2f; --color-two:#bf5d29; --color-three:#d14949;
+      --shadow-sm:0 2px 8px rgba(0,0,0,0.25); --shadow-md:0 12px 32px rgba(0,0,0,0.35);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:var(--font-body);background:linear-gradient(180deg,var(--color-bg) 0%,var(--color-surface-2) 100%);color:var(--color-text);line-height:1.5}
+    .shell{width:min(1580px,calc(100% - 28px));margin:0 auto;padding:28px 0 56px}.skip-link{position:absolute;left:-999px}.skip-link:focus{left:16px;top:16px;z-index:10;background:var(--color-surface);color:var(--color-text);padding:10px 14px;border-radius:10px}
+    .hero{display:grid;grid-template-columns:1.3fr .9fr;gap:22px;align-items:stretch;margin-bottom:20px}.hero-card,.panel{background:color-mix(in srgb,var(--color-surface) 88%,transparent);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);backdrop-filter:blur(10px)}
+    .hero-card{padding:28px;position:relative;overflow:hidden}.hero-card::after{content:"";position:absolute;inset:auto -80px -80px auto;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--color-primary) 18%,transparent) 0%,transparent 72%);pointer-events:none}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--color-chip);color:var(--color-primary);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+    h1{font-family:var(--font-display);font-size:clamp(2.1rem,4vw,4.4rem);line-height:1.03;letter-spacing:-0.03em;margin:18px 0 16px;max-width:13ch}.lede{font-size:1.02rem;color:var(--color-text-muted);max-width:68ch;margin-bottom:18px}
+    .hero-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}.metric{padding:14px 14px 16px;border-radius:16px;background:var(--color-surface-2);border:1px solid var(--color-divider)}.metric strong{display:block;font-size:1.25rem;margin-bottom:2px}.metric span{color:var(--color-text-muted);font-size:.88rem}
+    .panel{padding:22px;display:flex;flex-direction:column;gap:16px}.panel h2,.section-title h2{margin:0;font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-muted)}
+    .legend{display:grid;gap:10px}.legend-item{display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:start}.swatch{width:24px;height:24px;border-radius:8px;border:1px solid rgba(0,0,0,.08);margin-top:2px}.legend-item strong{display:block;font-size:.95rem}.legend-item span{display:block;color:var(--color-text-muted);font-size:.92rem}
+    .callout,.source-box{padding:16px;border-radius:16px;border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text-muted);font-size:.94rem}
+    .toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 18px}.toolbar-left,.toolbar-right{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    button{border:none;background:var(--color-surface);color:var(--color-text);padding:12px 14px;border-radius:14px;border:1px solid var(--color-border);font:inherit;cursor:pointer;transition:.18s ease;min-height:44px} button:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)} .button-primary{background:var(--color-primary);color:#fff;border-color:transparent}
+    .toggle-group{display:inline-flex;padding:4px;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);gap:4px}.toggle-group button{border:none;box-shadow:none;padding:10px 14px;border-radius:999px;background:transparent;min-height:auto}.toggle-group button.is-active{background:var(--color-chip);color:var(--color-primary);font-weight:700}
+    .heatmap-wrap{overflow:auto;border-radius:24px;border:1px solid var(--color-border);background:var(--color-surface);box-shadow:var(--shadow-md)} table{width:100%;border-collapse:separate;border-spacing:0;min-width:1880px}
+    thead th{position:sticky;top:0;z-index:2;background:color-mix(in srgb,var(--color-surface) 92%,transparent);backdrop-filter:blur(12px);color:var(--color-text);text-align:left;font-size:.83rem;letter-spacing:.06em;text-transform:uppercase;padding:18px 12px;border-bottom:1px solid var(--color-border)}
+    tbody tr.domain-row td{background:var(--color-surface-2);font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:.78rem;color:var(--color-text-muted);padding:14px 16px;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-divider)}
+    tbody td{padding:14px 12px;border-bottom:1px solid var(--color-divider);vertical-align:top;background:var(--color-surface)} tbody tr:hover td.feature-cell, tbody tr:hover td.progress-cell, tbody tr:hover td.score-cell{background:var(--color-surface-2)}
+    .feature-cell{min-width:280px}.feature-title{display:block;font-weight:700;margin-bottom:4px}.feature-note{display:block;color:var(--color-text-muted);font-size:.9rem;max-width:48ch}.progress-badge{display:inline-flex;align-items:center;justify-content:center;min-width:82px;padding:8px 12px;border-radius:999px;background:var(--color-chip);color:var(--color-primary-2);font-weight:700;font-size:.84rem}
+    .score-cell{width:120px;padding:10px}.score-card{min-height:100px;border-radius:18px;border:1px solid rgba(0,0,0,0.06);padding:10px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;color:#201712;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);transition:transform .18s ease, box-shadow .18s ease;outline:none}.score-card:focus-visible,.score-card:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.10)} .score-0{background:var(--color-zero)} .score-1{background:var(--color-one)} .score-2{background:var(--color-two);color:#fff6f0} .score-3{background:var(--color-three);color:#fff7f4}
+    .score-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.score-number{font-size:1.4rem;font-weight:800;line-height:1}.score-word{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.95}.score-detail{font-size:.82rem;line-height:1.32;opacity:.96}
+    .notes{display:grid;grid-template-columns:1.2fr 1fr;gap:22px;margin-top:24px}.bullet-list{margin:0;padding-left:18px;color:var(--color-text-muted)}.bullet-list li + li{margin-top:10px}.footer-note{margin-top:22px;color:var(--color-text-faint);font-size:.9rem;text-align:center}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (max-width:1180px){.hero,.notes{grid-template-columns:1fr} h1{max-width:none}.hero-grid{grid-template-columns:repeat(2,minmax(0,1fr))}} @media (max-width:760px){.shell{width:min(100% - 18px,1580px);padding:18px 0 40px}.hero-card,.panel{padding:18px;border-radius:20px}.hero-grid{grid-template-columns:1fr}.toolbar-left,.toolbar-right{width:100%}.toolbar-right{justify-content:flex-start} table{min-width:1600px} h1{font-size:2.2rem}} @media print{body{background:#fff}.shell{width:100%;padding:0}.hero,.notes{grid-template-columns:1fr}.toolbar{display:none}.hero-card,.panel,.heatmap-wrap{box-shadow:none}}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to heatmap</a>
+  <div class="shell">
+    <header class="hero">
+      <section class="hero-card">
+        <div class="eyebrow">Expanded syndrome map</div>
+        <h1>Expanded dementia hallmark heatmap</h1>
+        <p class="lede">This upgraded HTML version broadens the matrix beyond the common four syndromes to include major focal, atypical, infectious, prion, and metabolic neurocognitive syndromes requested for teaching use. Scores reflect prominence of each feature as an early or core clue, not overall prevalence.</p>
+        <div class="hero-grid" aria-label="heatmap summary metrics">
+          <div class="metric"><strong>11</strong><span>Syndrome columns</span></div>
+          <div class="metric"><strong>18</strong><span>Hallmark features</span></div>
+          <div class="metric"><strong>6</strong><span>Clinical domains</span></div>
+          <div class="metric"><strong>0–3</strong><span>Prominence scale</span></div>
+        </div>
+      </section>
+      <aside class="panel" aria-labelledby="legend-title">
+        <h2 id="legend-title">Legend and scope</h2>
+        <div class="legend">
+          <div class="legend-item"><div class="swatch" style="background:var(--color-zero)"></div><div><strong>0 · Not typical</strong><span>Uncommon or not a defining early feature.</span></div></div>
+          <div class="legend-item"><div class="swatch" style="background:var(--color-one)"></div><div><strong>1 · Can occur</strong><span>Seen in some cases but not a leading clue.</span></div></div>
+          <div class="legend-item"><div class="swatch" style="background:var(--color-two)"></div><div><strong>2 · Common</strong><span>Frequently present or diagnostically useful.</span></div></div>
+          <div class="legend-item"><div class="swatch" style="background:var(--color-three)"></div><div><strong>3 · Hallmark</strong><span>Strong early or core syndromic feature.</span></div></div>
+        </div>
+        <div class="callout">The matrix now includes Alzheimer’s disease, vascular dementia, Lewy body dementia, behavioural variant FTD, primary progressive aphasia, posterior cortical atrophy, Parkinson disease dementia, Creutzfeldt–Jakob disease, HIV-associated dementia, dialysis dementia, and normal-pressure hydrocephalus.</div>
+        <div class="source-box">Clinical anchors used for expansion include recognised PPA variants and their language-led presentation, PCA as a visual-predominant posterior syndrome, CJD as a rapidly progressive dementia with myoclonus and ataxia, and HIV-associated dementia as a subcortical slowing-gait syndrome.</div>
+      </aside>
+    </header>
+
+    <div class="toolbar" aria-label="display controls">
+      <div class="toolbar-left">
+        <div class="toggle-group" role="tablist" aria-label="Theme selection">
+          <button id="lightBtn" class="is-active" type="button" aria-pressed="true">Light</button>
+          <button id="darkBtn" type="button" aria-pressed="false">Dark</button>
+        </div>
+        <button id="expandBtn" type="button">Expand all details</button>
+        <button id="collapseBtn" type="button">Compact view</button>
+      </div>
+      <div class="toolbar-right">
+        <button class="button-primary" type="button" onclick="window.print()">Print / save PDF</button>
+      </div>
+    </div>
+
+    <main id="main" class="heatmap-wrap">
+      <table aria-describedby="table-caption">
+        <caption id="table-caption" class="sr-only">Expanded heatmap comparing hallmark syndromic features across major common, atypical, infectious, prion, and metabolic dementia syndromes.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Feature</th>
+            <th scope="col">Progression</th>
+            <th scope="col">AD</th>
+            <th scope="col">VaD</th>
+            <th scope="col">DLB</th>
+            <th scope="col">bvFTD</th>
+            <th scope="col">PPA</th>
+            <th scope="col">PCA</th>
+            <th scope="col">PDD</th>
+            <th scope="col">CJD</th>
+            <th scope="col">HIV</th>
+            <th scope="col">Dialysis</th>
+            <th scope="col">NPH</th>
+          </tr>
+        </thead>
+        <tbody id="heatmap-body"></tbody>
+      </table>
+    </main>
+
+    <section class="notes">
+      <section class="panel">
+        <div class="section-title"><h2>Pattern summary</h2></div>
+        <ul class="bullet-list">
+          <li>PPA is treated as a language-led umbrella syndrome, with early isolated aphasia and relative sparing of other domains in the initial phase.</li>
+          <li>PCA is weighted toward higher-order visual dysfunction and visuospatial breakdown with relative early sparing of memory and behaviour.</li>
+          <li>CJD is represented as a rapidly progressive syndrome with prominent myoclonus, cerebellar or motor findings, and severe subacute decline.</li>
+          <li>HIV-associated dementia is framed as a subcortical syndrome marked by psychomotor slowing, gait-motor change, and executive impairment.</li>
+          <li>Dialysis dementia is included as a historical metabolic-toxic syndrome with dysarthria, myoclonus, seizures, and rapid progression.</li>
+        </ul>
+      </section>
+      <aside class="panel">
+        <div class="section-title"><h2>Use notes</h2></div>
+        <ul class="bullet-list">
+          <li>This figure is best used for teaching syndrome recognition and differential framing rather than definitive diagnosis.</li>
+          <li>Some labels are umbrella terms. PPA contains nonfluent/agrammatic, semantic, and logopenic variants, each with distinct profiles.</li>
+          <li>The next precision upgrade would split PPA into nfvPPA, svPPA, and lvPPA, and potentially split PCA from atypical Alzheimer disease variants.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <p class="footer-note">Prepared August 2026 · expanded interactive HTML heatmap for clinical teaching and reference</p>
+  </div>
+
+  <script>
+    const cols = [
+      ['ad','AD'],['vad','VaD'],['dlb','DLB'],['bvftd','bvFTD'],['ppa','PPA'],['pca','PCA'],['pdd','PDD'],['cjd','CJD'],['hiv','HIV'],['dialysis','Dialysis'],['nph','NPH']
+    ];
+    const data = [
+      {domain:'Memory', feature:'Early episodic memory loss', note:'Disproportionate impairment in new learning and recent recall.', progression:'Gradual', scores:{ad:[3,'Hallmark','Classic early amnestic presentation.'], vad:[1,'Can occur','Often less dominant than executive slowing.'], dlb:[1,'Can occur','Usually less striking than attention-visuospatial change.'], bvftd:[1,'Can occur','Often relatively milder early than behavioural change.'], ppa:[0,'Not typical','Language rather than memory leads early.'], pca:[0,'Not typical','Visual syndrome usually dominates onset.'], pdd:[1,'Can occur','Attention-executive deficits usually lead more than memory.'], cjd:[1,'Can occur','Memory can fail, but rapid global decline dominates.'], hiv:[1,'Can occur','Subcortical slowing is often more prominent.'], dialysis:[1,'Can occur','Can be present but not defining.'], nph:[1,'Can occur','Usually not the main early clue.']}} ,
+      {domain:'Executive / attention', feature:'Executive dysfunction early', note:'Planning, sequencing, set shifting, judgement, organisation.', progression:'Variable', scores:{ad:[1,'Can occur','Usually emerges but may not dominate at onset.'], vad:[3,'Hallmark','A leading clue, especially subcortical vascular patterns.'], dlb:[2,'Common','Often present with attentional impairment.'], bvftd:[3,'Hallmark','Common early frontal systems deficit.'], ppa:[1,'Can occur','May develop but is not the defining first feature.'], pca:[1,'Can occur','Visual dysfunction tends to dominate earlier.'], pdd:[3,'Hallmark','Executive-attentional profile is highly typical.'], cjd:[2,'Common','Rapid disorganisation can become obvious early.'], hiv:[3,'Hallmark','Subcortical dysexecutive slowing is classic.'], dialysis:[2,'Common','Often seen alongside broader encephalopathic dysfunction.'], nph:[2,'Common','Frontal-subcortical pattern is common.']}} ,
+      {domain:'Executive / attention', feature:'Slowed processing speed', note:'Psychomotor and cognitive slowing out of proportion to memory loss.', progression:'Variable', scores:{ad:[1,'Can occur','May appear later or secondarily.'], vad:[3,'Hallmark','Very typical in vascular cognitive syndromes.'], dlb:[2,'Common','Often linked with fluctuation and parkinsonian slowing.'], bvftd:[1,'Can occur','Less defining than behaviour or executive profile.'], ppa:[0,'Not typical','Language impairment predominates initially.'], pca:[1,'Can occur','Can emerge later with broader involvement.'], pdd:[3,'Hallmark','A key subcortical clue.'], cjd:[2,'Common','Can accompany rapidly progressive encephalopathy.'], hiv:[3,'Hallmark','Psychomotor slowing is strongly characteristic.'], dialysis:[2,'Common','Often part of toxic-metabolic slowing.'], nph:[2,'Common','Often part of frontal-subcortical syndrome.']}} ,
+      {domain:'Executive / attention', feature:'Stepwise or stroke-linked decline', note:'Abrupt changes, fluctuating plateaus, or temporal link to cerebrovascular events.', progression:'Stepwise', scores:{ad:[0,'Not typical','Not a classic Alzheimer pattern.'], vad:[3,'Hallmark','Strong clue when clinically evident.'], dlb:[0,'Not typical','Does not define Lewy body disease.'], bvftd:[0,'Not typical','Not expected as a core pattern.'], ppa:[0,'Not typical','Neurodegenerative language syndromes are gradual.'], pca:[0,'Not typical','Usually progressive rather than stepwise.'], pdd:[0,'Not typical','Not a core Parkinson disease dementia pattern.'], cjd:[0,'Not typical','Rapid but not stepwise in the vascular sense.'], hiv:[0,'Not typical','Usually subacute-progressive rather than stepwise.'], dialysis:[0,'Not typical','Metabolic-toxic decline is not classically stepwise.'], nph:[0,'Not typical','Usually insidious rather than stepwise.']}} ,
+      {domain:'Executive / attention', feature:'Visuospatial or visual-posterior dysfunction', note:'Visual processing, simultanagnosia, spatial disorientation, constructional failure.', progression:'Variable', scores:{ad:[1,'Can occur','Can develop but less dominant early.'], vad:[1,'Can occur','May occur depending on lesion burden and location.'], dlb:[3,'Hallmark','A central clue in many presentations.'], bvftd:[0,'Not typical','Usually not a frontal behavioural hallmark.'], ppa:[0,'Not typical','Language syndrome predominates.'], pca:[3,'Hallmark','Core syndrome feature with posterior cortical dysfunction.'], pdd:[2,'Common','Visuospatial impairment is common.'], cjd:[1,'Can occur','Visual symptoms possible in some variants.'], hiv:[1,'Can occur','Possible but not defining.'], dialysis:[0,'Not typical','Not a leading clue.'], nph:[1,'Can occur','Can occur but not central.']}} ,
+      {domain:'Neuropsychiatric', feature:'Cognitive fluctuations', note:'Marked variation in alertness, coherence, and performance across time.', progression:'Fluctuating', scores:{ad:[0,'Not typical','Mild variation can occur but not classic.'], vad:[1,'Can occur','Can be seen, especially with mixed disease.'], dlb:[3,'Hallmark','A defining core clinical feature.'], bvftd:[0,'Not typical','Not a usual hallmark.'], ppa:[0,'Not typical','Language deficits are more consistent than fluctuant.'], pca:[0,'Not typical','Not a defining PCA feature.'], pdd:[2,'Common','Can occur, especially with Lewy body overlap.'], cjd:[1,'Can occur','May appear with rapid encephalopathy.'], hiv:[1,'Can occur','May fluctuate with systemic illness but not core hallmark.'], dialysis:[1,'Can occur','Possible in toxic-metabolic states.'], nph:[0,'Not typical','Not a defining clue.']}} ,
+      {domain:'Neuropsychiatric', feature:'Visual hallucinations', note:'Recurrent, well-formed visual hallucinations.', progression:'Fluctuating', scores:{ad:[0,'Not typical','Usually late, atypical, or suggests mixed pathology.'], vad:[1,'Can occur','Possible but not a dominant syndrome clue.'], dlb:[3,'Hallmark','Highly characteristic when recurrent and well formed.'], bvftd:[0,'Not typical','Generally not expected early.'], ppa:[0,'Not typical','Not expected as a core aphasic feature.'], pca:[1,'Can occur','Can occur, especially later or with overlap.'], pdd:[2,'Common','A recognised and useful clue.'], cjd:[1,'Can occur','Possible but not typical hallmark.'], hiv:[0,'Not typical','Not a classic leading feature.'], dialysis:[0,'Not typical','Not a recognised hallmark.'], nph:[0,'Not typical','Not expected as core syndrome.']}} ,
+      {domain:'Motor / sleep', feature:'REM sleep behaviour disorder', note:'Dream enactment or parasomnia suggesting synucleinopathy.', progression:'Often precedes', scores:{ad:[0,'Not typical','Not a typical Alzheimer feature.'], vad:[0,'Not typical','Not a defining vascular clue.'], dlb:[3,'Hallmark','Strong synucleinopathy marker and major diagnostic clue.'], bvftd:[0,'Not typical','Not a classic FTD feature.'], ppa:[0,'Not typical','Not expected as core language syndrome.'], pca:[0,'Not typical','Not a typical PCA clue.'], pdd:[2,'Common','Common synucleinopathy-associated clue.'], cjd:[0,'Not typical','Not a core prion feature.'], hiv:[0,'Not typical','Not a classic HIV-associated clue.'], dialysis:[0,'Not typical','Not recognised hallmark.'], nph:[0,'Not typical','Not a core NPH feature.']}} ,
+      {domain:'Motor / sleep', feature:'Parkinsonism', note:'Bradykinesia, rigidity, gait slowing, hypomimia, or reduced arm swing.', progression:'Progressive', scores:{ad:[0,'Not typical','Suggests alternate or mixed pathology if prominent early.'], vad:[1,'Can occur','Possible in vascular parkinsonism patterns.'], dlb:[3,'Hallmark','One of the key syndrome anchors.'], bvftd:[1,'Can occur','Seen in some FTD-spectrum disorders but not most typical presentations.'], ppa:[0,'Not typical','Not a defining aphasic syndrome feature.'], pca:[0,'Not typical','Not usually the leading clue.'], pdd:[3,'Hallmark','Required clinical anchor by definition.'], cjd:[2,'Common','Extrapyramidal features can occur in rapid decline.'], hiv:[1,'Can occur','Possible but not the main classic feature.'], dialysis:[1,'Can occur','Motor abnormalities can occur in encephalopathy.'], nph:[1,'Can occur','Gait phenotype is more typical than parkinsonism per se.']}} ,
+      {domain:'Motor / sleep', feature:'Myoclonus or startle phenomena', note:'Jerks, stimulus-sensitive movements, or multifocal myoclonus.', progression:'Rapid', scores:{ad:[0,'Not typical','Not an early hallmark.'], vad:[0,'Not typical','Not a leading clue.'], dlb:[0,'Not typical','Not a defining feature.'], bvftd:[0,'Not typical','Not expected early.'], ppa:[0,'Not typical','Not a core feature.'], pca:[0,'Not typical','Not a usual clue.'], pdd:[0,'Not typical','Not a major syndrome anchor.'], cjd:[3,'Hallmark','Highly characteristic in the right clinical setting.'], hiv:[0,'Not typical','Not a classic hallmark.'], dialysis:[2,'Common','Can occur in dialysis encephalopathy.'], nph:[0,'Not typical','Not expected.']}} ,
+      {domain:'Motor / sleep', feature:'Ataxia or cerebellar involvement', note:'Gait or limb ataxia, incoordination, cerebellar signs.', progression:'Rapid / variable', scores:{ad:[0,'Not typical','Not a core early clue.'], vad:[1,'Can occur','Possible with posterior circulation lesions.'], dlb:[0,'Not typical','Not a defining feature.'], bvftd:[0,'Not typical','Not expected in typical bvFTD.'], ppa:[0,'Not typical','Not a core aphasic presentation.'], pca:[0,'Not typical','Usually visual rather than cerebellar.'], pdd:[0,'Not typical','Not typical.'], cjd:[3,'Hallmark','Important clue in rapidly progressive dementia.'], hiv:[0,'Not typical','Not a classic hallmark.'], dialysis:[1,'Can occur','May occur in metabolic-toxic states.'], nph:[0,'Not typical','Gait apraxia or frontal gait is more typical.']}} ,
+      {domain:'Language / behaviour', feature:'Behavioural disinhibition or apathy', note:'Loss of social filter, reduced empathy, apathy, compulsive traits, or altered eating.', progression:'Progressive', scores:{ad:[1,'Can occur','Behavioural symptoms may emerge but are not usually the lead feature.'], vad:[1,'Can occur','Can occur depending on lesion distribution.'], dlb:[1,'Can occur','Possible but less defining than fluctuation or hallucinations.'], bvftd:[3,'Hallmark','A principal early clue in behavioural variant disease.'], ppa:[1,'Can occur','Can emerge later depending on variant.'], pca:[0,'Not typical','Behaviour is relatively spared early.'], pdd:[1,'Can occur','May occur but is not the core defining clue.'], cjd:[1,'Can occur','Behavioural change can be part of rapid dementia.'], hiv:[1,'Can occur','Apathy can occur in subcortical syndromes.'], dialysis:[1,'Can occur','Possible as part of encephalopathy.'], nph:[1,'Can occur','Frontal apathy may occur.']}} ,
+      {domain:'Language / behaviour', feature:'Language-predominant syndrome', note:'Progressive aphasia, naming failure, grammar disturbance, or semantic loss.', progression:'Progressive', scores:{ad:[1,'Can occur','Can occur in atypical variants but not the usual pattern.'], vad:[1,'Can occur','May occur with strategic lesions.'], dlb:[0,'Not typical','Usually not a core defining pattern.'], bvftd:[2,'Common','FTD spectrum includes language-led syndromes.'], ppa:[3,'Hallmark','The defining umbrella feature.'], pca:[0,'Not typical','Visual syndrome predominates.'], pdd:[0,'Not typical','Not a key syndrome feature.'], cjd:[1,'Can occur','Language disturbance may occur during rapid progression.'], hiv:[0,'Not typical','Not a classic leading feature.'], dialysis:[1,'Can occur','Dysarthria or language issues can occur but not defining.'], nph:[0,'Not typical','Not a usual hallmark.']}} ,
+      {domain:'Language / behaviour', feature:'Word comprehension or semantic loss', note:'Loss of word or object meaning, impaired naming linked to semantic breakdown.', progression:'Progressive', scores:{ad:[0,'Not typical','Not a classic leading feature.'], vad:[0,'Not typical','Usually not the key pattern.'], dlb:[0,'Not typical','Not a usual hallmark.'], bvftd:[1,'Can occur','Can occur in FTD spectrum.'], ppa:[3,'Hallmark','Especially characteristic of semantic variant PPA.'], pca:[0,'Not typical','Visual syndrome dominates.'], pdd:[0,'Not typical','Not typical.'], cjd:[0,'Not typical','Not a defining clue.'], hiv:[0,'Not typical','Not classic.'], dialysis:[0,'Not typical','Not typical.'], nph:[0,'Not typical','Not expected.']}} ,
+      {domain:'Language / behaviour', feature:'Effortful nonfluent speech or agrammatism', note:'Apraxia of speech, halting effortful output, or grammar impairment.', progression:'Progressive', scores:{ad:[0,'Not typical','Not the usual first clue.'], vad:[0,'Not typical','Not a hallmark syndrome.'], dlb:[0,'Not typical','Not a core feature.'], bvftd:[1,'Can occur','Possible in FTD-spectrum overlap.'], ppa:[3,'Hallmark','Characteristic of nonfluent or agrammatic PPA.'], pca:[0,'Not typical','Not a defining visual syndrome clue.'], pdd:[0,'Not typical','Not expected.'], cjd:[0,'Not typical','Not a defining pattern.'], hiv:[0,'Not typical','Not classic.'], dialysis:[0,'Not typical','Not typical.'], nph:[0,'Not typical','Not expected.']}} ,
+      {domain:'Gait / autonomic', feature:'Early gait disturbance', note:'Gait slowing, imbalance, frontal gait, or lower-body gait difficulty.', progression:'Variable', scores:{ad:[0,'Not typical','Not expected as an early hallmark.'], vad:[3,'Hallmark','Common and clinically useful clue.'], dlb:[2,'Common','Often accompanies parkinsonism and falls risk.'], bvftd:[1,'Can occur','May occur but not typically dominant early.'], ppa:[0,'Not typical','Not a primary language-led clue.'], pca:[1,'Can occur','Can occur later via visual-spatial impairment.'], pdd:[3,'Hallmark','Motor-gait disease is central.'], cjd:[2,'Common','Ataxic or rapidly unstable gait may appear early.'], hiv:[2,'Common','Slowed or unsteady gait is a useful clue.'], dialysis:[2,'Common','Can occur with encephalopathy and motor dysfunction.'], nph:[3,'Hallmark','Classic opening clue in the triad.']}} ,
+      {domain:'Gait / autonomic', feature:'Early urinary symptoms', note:'Urgency, incontinence, or frontal-subcortical pattern bladder symptoms.', progression:'Variable', scores:{ad:[0,'Not typical','Usually later or nonspecific.'], vad:[2,'Common','Often fits subcortical vascular patterns.'], dlb:[0,'Not typical','Autonomic symptoms may occur but this is not the framed hallmark here.'], bvftd:[0,'Not typical','Not a usual early hallmark.'], ppa:[0,'Not typical','Not expected.'], pca:[0,'Not typical','Not a usual early clue.'], pdd:[1,'Can occur','Can occur but not core diagnostic shorthand.'], cjd:[0,'Not typical','Not a major hallmark.'], hiv:[1,'Can occur','Can occur but not defining.'], dialysis:[0,'Not typical','Not a defining clue.'], nph:[3,'Hallmark','Key part of the classic triad.']}} ,
+      {domain:'Gait / autonomic', feature:'Relative early memory preservation', note:'Memory less impaired than language, behaviour, visuospatial, or subcortical-executive dysfunction.', progression:'Relative', scores:{ad:[0,'Not typical','Runs against the classic amnestic pattern.'], vad:[1,'Can occur','May be relatively preserved compared with executive change.'], dlb:[1,'Can occur','Often less severe than attention-visuospatial deficits early.'], bvftd:[2,'Common','Helpful when behaviour dominates.'], ppa:[3,'Hallmark','Typical early framing for PPA as a language-led syndrome.'], pca:[3,'Hallmark','Typical early framing for PCA as a visual-led syndrome.'], pdd:[1,'Can occur','Attention and executive impairment may predominate.'], cjd:[0,'Not typical','Rapid global decline generally overwhelms this distinction.'], hiv:[1,'Can occur','Subcortical slowing may outstrip amnestic deficits early.'], dialysis:[0,'Not typical','Usually broader encephalopathic decline.'], nph:[1,'Can occur','Gait and bladder may dominate before memory.']}}
+    ];
+    const tbody = document.getElementById('heatmap-body'); let currentDomain = null;
+    data.forEach(row => {
+      if (row.domain !== currentDomain) { currentDomain = row.domain; const domainTr = document.createElement('tr'); domainTr.className = 'domain-row'; domainTr.innerHTML = `<td colspan="13">${row.domain}</td>`; tbody.appendChild(domainTr); }
+      const scoreCells = cols.map(([key,label]) => { const [score,word,detail] = row.scores[key]; return `<td class="score-cell"><div class="score-card score-${score}" tabindex="0" aria-label="${label}: score ${score}, ${word}. ${detail}"><div class="score-top"><span class="score-number">${score}</span><span class="score-word">${word}</span></div><div class="score-detail" data-detail>${detail}</div></div></td>`; }).join('');
+      const tr = document.createElement('tr'); tr.innerHTML = `<td class="feature-cell"><span class="feature-title">${row.feature}</span><span class="feature-note" data-note>${row.note}</span></td><td class="progress-cell"><span class="progress-badge">${row.progression}</span></td>${scoreCells}`; tbody.appendChild(tr);
+    });
+    const root = document.documentElement, lightBtn = document.getElementById('lightBtn'), darkBtn = document.getElementById('darkBtn');
+    const setTheme = (theme) => { root.setAttribute('data-theme', theme); lightBtn.classList.toggle('is-active', theme === 'light'); darkBtn.classList.toggle('is-active', theme === 'dark'); lightBtn.setAttribute('aria-pressed', String(theme === 'light')); darkBtn.setAttribute('aria-pressed', String(theme === 'dark')); };
+    lightBtn.addEventListener('click', () => setTheme('light')); darkBtn.addEventListener('click', () => setTheme('dark'));
+    const setCompact = (compact) => { document.querySelectorAll('[data-note],[data-detail]').forEach(el => el.style.display = compact ? 'none' : ''); };
+    document.getElementById('expandBtn').addEventListener('click', () => setCompact(false)); document.getElementById('collapseBtn').addEventListener('click', () => setCompact(true));
+  </script>
+</body>
+</html>
