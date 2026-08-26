@@ -1,4 +1,4 @@
-const CACHE_NAME = 'geri-guide-v3';
+const CACHE_NAME = 'geri-guide-v9';
 const PRECACHE = [
   './',
   'index.html',
@@ -9,6 +9,15 @@ const PRECACHE = [
   'tools/clinic-companion.html',
   'tools/ncd-diagnostic-algorithm.html',
   'tools/ncd-quick-reference.html',
+  'tools/dementia-neuroimaging.html',
+  'tools/dementia-brain-anatomical.html',
+  'tools/fitness-to-drive.html',
+  'tools/assets/allen-brain.glb',
+  'tools/vendor/three.module.js',
+  'tools/vendor/GLTFLoader.js',
+  'tools/vendor/OrbitControls.js',
+  'tools/vendor/BufferGeometryUtils.js',
+  'tools/vendor/CSS2DRenderer.js',
   'tools/dementia-toolkit.html',
   'tools/cognitive-tests.html',
   'tools/pattern-summary.html',

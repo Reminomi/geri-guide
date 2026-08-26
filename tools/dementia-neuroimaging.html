@@ -1,0 +1,400 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Neuroimaging Patterns in Dementia</title>
+<style>
+:root{--ink:#17252d;--blue:#28566b;--blue-dark:#173f51;--pale:#edf5f7;--line:#cbd7dc;--warn:#fff6df;
+  --lv0:#8a97a0;--lv1:#4fb3c9;--lv2:#e8a33d;--lv3:#e8433a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#f3f6f7;color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header.doc{background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:#fff;padding:26px 22px 20px}
+header.doc h1{margin:0 0 6px;font-size:1.28rem}
+header.doc p{margin:0;color:#dce8ec;font-size:.86rem;max-width:62ch}
+.wrap{max-width:780px;margin:0 auto;padding:0 18px 50px}
+.notice{background:var(--warn);border-left:5px solid #d39b27;padding:12px 15px;margin:20px 0;font-size:.85rem}
+
+.viewer{background:#05080a;border-radius:16px;padding:10px;margin:22px 0 0;box-shadow:0 10px 28px rgba(10,25,35,.3);position:relative}
+.viewer-top{display:flex;justify-content:space-between;align-items:center;padding:2px 4px 8px;color:#9db3bc;font-size:.72rem;font-family:ui-monospace,Menlo,monospace}
+.viewer-top b{color:#fff}
+.slice-tabs{display:flex;gap:6px}
+.slice-tabs button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#cfe0e6;
+  border-radius:7px;padding:6px 11px;font-size:.76rem;font-weight:700;cursor:pointer}
+.slice-tabs button.active{background:#4fb3c9;color:#04262c;border-color:#4fb3c9}
+.svg-host{width:100%;aspect-ratio:1/1;max-width:420px;margin:0 auto;position:relative}
+.svg-host svg{width:100%;height:100%;display:block}
+.orient{position:absolute;font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:#6c828b;font-weight:700}
+.orient.top{top:6px;left:50%;transform:translateX(-50%)}
+.orient.bottom{bottom:6px;left:50%;transform:translateX(-50%)}
+.orient.left{left:6px;top:50%;transform:translateY(-50%)}
+.orient.right{right:6px;top:50%;transform:translateY(-50%)}
+.region-shape{cursor:pointer;transition:opacity .3s ease}
+.region-shape:hover{filter:brightness(1.25)}
+.sign-box{background:#0e2634;color:#dce8ec;border-radius:0 0 12px 12px;margin-top:-4px;padding:12px 16px;font-size:.82rem}
+.sign-box b{color:#7fd3e0}
+
+.tooltip{position:fixed;transform:translate(-50%,-130%);background:#173f51;color:#fff;font-size:.76rem;font-weight:700;
+  padding:5px 9px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap;z-index:20}
+.tooltip.show{opacity:1}
+
+h2.sec{color:var(--blue-dark);font-size:1rem;margin:26px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 4px}
+.chip{background:#fff;border:1.5px solid var(--line);color:var(--blue-dark);border-radius:999px;
+  padding:7px 13px;font-size:.8rem;font-weight:700;cursor:pointer}
+.chip.active{background:var(--blue-dark);border-color:var(--blue-dark);color:#fff}
+
+.legend-scale{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:10px 0 4px;font-size:.78rem;color:#4a616a}
+.legend-scale span{display:inline-flex;align-items:center;gap:6px}
+.legend-scale i{width:13px;height:13px;border-radius:4px;display:inline-block}
+
+.info-panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;min-height:58px}
+.info-panel h3{margin:0 0 4px;color:var(--blue-dark);font-size:1rem}
+.info-panel .lvl{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+  padding:2px 8px;border-radius:999px;color:#fff;margin-bottom:8px}
+.info-panel p{margin:4px 0 0;font-size:.88rem;color:#3a545e}
+.info-panel .placeholder{color:#8a9aa2;font-size:.86rem}
+
+.small{font-size:.85rem;color:#596c75}
+</style></head><body>
+<header class="doc">
+  <h1>Neuroimaging Patterns in Dementia</h1>
+  <p>Schematic axial / coronal / sagittal slices. Pick a subtype to see the characteristic distribution and classic imaging sign; tap a structure to learn what it does.</p>
+</header>
+<div class="wrap">
+
+<div class="notice"><b>Teaching schematic, not a real scan.</b> Structures are simplified and stylised for orientation, not traced from actual imaging. Colour reflects <i>typical/characteristic</i> involvement described in the literature, not an individual patient's scan — real disease is more variable and mixed pathology is common. See the <a href="ncd-diagnostic-algorithm.html" style="color:var(--blue)">NCD Diagnostic Algorithm</a> for full criteria.</div>
+
+<div class="viewer">
+  <div class="viewer-top">
+    <div class="slice-tabs" id="sliceTabs"></div>
+    <div id="sliceLabel"><b>—</b></div>
+  </div>
+  <div class="svg-host" id="svgHost">
+    <span class="orient top" id="orTop"></span>
+    <span class="orient bottom" id="orBottom"></span>
+    <span class="orient left" id="orLeft"></span>
+    <span class="orient right" id="orRight"></span>
+  </div>
+</div>
+<div class="sign-box" id="signBox"></div>
+<div class="tooltip" id="tooltip"></div>
+
+<h2 class="sec">Dementia subtype</h2>
+<div class="chips" id="typeChips"></div>
+
+<div class="legend-scale">
+  <span><i style="background:var(--lv0)"></i>Relatively spared</span>
+  <span><i style="background:var(--lv1)"></i>Mild / variable</span>
+  <span><i style="background:var(--lv2)"></i>Moderate</span>
+  <span><i style="background:var(--lv3)"></i>Prominent / hallmark</span>
+</div>
+
+<div class="info-panel" id="infoPanel"><p class="placeholder">Tap a coloured structure on the scan to see what it does and how it's affected in the selected subtype.</p></div>
+
+<p class="small" style="margin-top:24px">Involvement patterns and imaging signs summarised from the same evidence base as the <a href="ncd-diagnostic-algorithm.html" style="color:var(--blue)">NCD Diagnostic Algorithm</a> (NIA-AA/IWG-2, McKeith 2017, Rascovsky 2011, Gorno-Tempini 2011/2016, MDS-PSP). No patient information entered or stored here.</p>
+</div>
+
+<script>
+/* ===================== CLINICAL DATA ===================== */
+const REGIONS = {
+ fL:{label:'Frontal lobe (L)', blurb:'Executive function, planning, personality, social behaviour, motor control.'},
+ fR:{label:'Frontal lobe (R)', blurb:'Executive function, planning, personality, social behaviour, motor control.'},
+ tL:{label:'Temporal lobe (L)', blurb:'Language, semantic knowledge, memory consolidation (with hippocampus).'},
+ tR:{label:'Temporal lobe (R)', blurb:'Face/voice recognition, semantic knowledge, memory consolidation.'},
+ pL:{label:'Parietal lobe (L)', blurb:'Praxis (learnt movement), calculation, language-adjacent spatial processing.'},
+ pR:{label:'Parietal lobe (R)', blurb:'Spatial awareness, attention, visuoconstruction.'},
+ occ:{label:'Occipital lobe', blurb:'Primary visual processing.'},
+ hip:{label:'Hippocampus & medial temporal', blurb:'Encoding new memories, spatial navigation. Assessed on coronal imaging via medial temporal atrophy (MTA) rating.'},
+ bg:{label:'Basal ganglia & thalamus', blurb:'Movement initiation, sensory/motor relay, subcortical-cortical circuits.'},
+ stem:{label:'Brainstem', blurb:'Arousal, autonomic function, dopaminergic output (substantia nigra), sleep regulation.'},
+ cbl:{label:'Cerebellum', blurb:'Motor coordination, balance, and an increasingly recognised role in cognition.'},
+ vent:{label:'Ventricles (CSF spaces)', blurb:'Not brain tissue — their size is a proxy for surrounding volume loss (ex-vacuo dilatation) or, in NPH, a primary structural problem.'}
+};
+
+const TYPES = [
+ {id:'ad', label:'Alzheimer disease', inv:{fL:1,fR:1,tL:2,tR:2,pL:2,pR:2,occ:0,hip:3,bg:0,stem:0,cbl:0,vent:2},
+   notes:{hip:"Earliest and most prominent atrophy — the hallmark of typical amnestic Alzheimer disease. Rated on coronal imaging (medial temporal atrophy / Scheltens scale).",
+          tL:"Temporoparietal involvement increases as disease progresses.",
+          occ:"Classically relatively spared even in advanced disease — a differentiating clue from DLB.",
+          vent:"Temporal horn dilatation tracks hippocampal volume loss — visible on this coronal slice."},
+   sign:"Classic sign: disproportionate hippocampal / medial temporal atrophy with temporal horn dilatation on coronal imaging (medial temporal atrophy rating).", ventriculomegaly:true, mta:true},
+ {id:'vasc', label:'Vascular', inv:{fL:2,fR:2,tL:1,tR:1,pL:1,pR:1,occ:1,hip:1,bg:3,stem:1,cbl:0,vent:1},
+   notes:{bg:"Subcortical white-matter change and lacunar infarcts are the classic substrate — strategic single infarct or diffuse small-vessel pattern.",
+          fL:"Executive dysfunction and processing-speed slowing from disrupted frontal-subcortical circuits.",
+          hip:"Can be involved if a mesial temporal infarct occurs, but usually less than in Alzheimer disease."},
+   sign:"Classic sign: confluent white-matter hyperintensities (FLAIR/T2) ± territorial or lacunar infarcts — shown here as pale patches in the white matter.", wmh:true},
+ {id:'mixed', label:'Mixed (AD + vascular)', inv:{fL:2,fR:2,tL:2,tR:2,pL:1,pR:1,occ:1,hip:2,bg:2,stem:1,cbl:0,vent:2},
+   notes:{hip:"Combined hippocampal/medial temporal atrophy alongside small-vessel disease — the most common mixed-pathology pattern in older patients.",
+          bg:"Small-vessel disease (lacunes, white-matter change) contributes alongside the neurodegenerative component.",
+          fL:"Frontal predominance is a recognised feature of the mixed pattern, more than in pure Alzheimer disease alone."},
+   sign:"Classic sign: combined hippocampal/medial temporal atrophy AND small-vessel white-matter disease/lacunes on the same scan — neither pattern alone explains the full picture.", wmh:true, mta:true, ventriculomegaly:true},
+ {id:'dlb', label:'Lewy body', inv:{fL:2,fR:2,tL:1,tR:1,pL:2,pR:2,occ:3,hip:1,bg:2,stem:2,cbl:0,vent:0},
+   notes:{occ:"Occipital hypoperfusion/hypometabolism (SPECT/FDG-PET) is a hallmark — contrasts with the occipital sparing typical of Alzheimer disease.",
+          hip:"Relatively preserved early — an important differentiator from Alzheimer disease despite similar disability.",
+          bg:"Reduced striatal dopamine transporter uptake (DAT-SPECT) reflects nigrostriatal involvement.",
+          stem:"Brainstem/pontine structures are the substrate for REM sleep behaviour disorder."},
+   sign:"Classic sign: occipital hypometabolism on FDG-PET and reduced striatal DAT-SPECT uptake — structural MRI is often relatively unremarkable."},
+ {id:'bvftd', label:'Behavioural FTD', inv:{fL:3,fR:3,tL:2,tR:2,pL:0,pR:0,occ:0,hip:1,bg:1,stem:0,cbl:0,vent:1},
+   notes:{fL:"Frontal (especially orbitofrontal/anterior, often right-predominant) atrophy drives disinhibition, apathy, loss of empathy.",
+          pL:"Relatively spared early — a key differentiator from Alzheimer disease despite behavioural severity.",
+          tL:"Anterior temporal involvement contributes to semantic and social-cognition change."},
+   sign:"Classic sign: frontal ± anterior temporal atrophy on MRI, often asymmetric (right-predominant); frontotemporal hypometabolism on FDG-PET if MRI equivocal."},
+ {id:'ppa', label:'Primary progressive aphasia', inv:{fL:2,fR:0,tL:3,tR:0,pL:2,pR:0,occ:0,hip:1,bg:0,stem:0,cbl:0,vent:0},
+   notes:{tL:"Left anterior/temporoparietal language cortex — the core substrate; exact focus varies by variant (non-fluent / semantic / logopenic).",
+          fL:"Left inferior frontal involvement in the non-fluent variant (effortful, agrammatic speech).",
+          pL:"Left temporoparietal junction involvement in the logopenic variant.",
+          tR:"Right hemisphere relatively spared — this left-right asymmetry is itself the diagnostic clue."},
+   sign:"Classic sign: left-sided (language-network) atrophy — asymmetry is the diagnostic clue, not the absolute location, which varies by variant."},
+ {id:'pdd', label:'Parkinson disease dementia', inv:{fL:2,fR:2,tL:1,tR:1,pL:2,pR:2,occ:1,hip:1,bg:3,stem:3,cbl:0,vent:0},
+   notes:{stem:"Substantia nigra degeneration is the primary pathological substrate of Parkinson disease itself.",
+          bg:"Nigrostriatal dopaminergic loss underlies the parkinsonism and contributes to cognitive slowing.",
+          fL:"Frontal-subcortical circuit disruption drives executive dysfunction as dementia develops."},
+   sign:"Classic sign: reduced DAT-SPECT striatal uptake (already abnormal from underlying PD); structural MRI is often relatively unremarkable — used mainly to exclude other pathology."},
+ {id:'psp', label:'PSP', inv:{fL:2,fR:2,tL:0,tR:0,pL:0,pR:0,occ:0,hip:0,bg:2,stem:3,cbl:1,vent:1},
+   notes:{stem:"Midbrain atrophy is the radiological hallmark, producing the ‘hummingbird sign’ on midline sagittal MRI — drives the vertical gaze palsy.",
+          fL:"Frontal-executive and behavioural change from disrupted frontal-subcortical-brainstem circuits."},
+   sign:"Classic sign: midbrain atrophy — the ‘hummingbird sign’ on sagittal MRI (compare the pinched midbrain silhouette on this slice).", psp:true},
+ {id:'cbs', label:'Corticobasal syndrome', inv:{fL:2,fR:1,tL:0,tR:0,pL:3,pR:1,occ:0,hip:0,bg:2,stem:0,cbl:0,vent:0},
+   notes:{pL:"Marked, often strikingly asymmetric parietal involvement — substrate for cortical sensory loss, apraxia, alien-limb phenomenon.",
+          fL:"Asymmetric frontal involvement contributes to apraxia and rigidity on the more-affected side.",
+          pR:"Asymmetry is itself the diagnostic clue — the more-affected side varies between patients; shown here as illustrative only."},
+   sign:"Classic sign: markedly asymmetric frontoparietal atrophy, one hemisphere clearly worse than the other — the asymmetry itself is the clue."},
+ {id:'nph', label:'Normal pressure hydrocephalus', inv:{fL:2,fR:2,tL:0,tR:0,pL:0,pR:0,occ:0,hip:0,bg:1,stem:0,cbl:0,vent:3},
+   notes:{fL:"Frontal-subcortical circuits stretched by ventricular enlargement drive the gait and executive change.",
+          bg:"Periventricular structures are mechanically affected by ventriculomegaly rather than primary neurodegeneration.",
+          vent:"Ventriculomegaly disproportionate to sulcal atrophy (Evans' index >0.3) is the defining structural finding — shown here markedly enlarged."},
+   sign:"Classic sign: ventriculomegaly disproportionate to cortical atrophy (Evans' index >0.3), narrowed callosal angle — one of the few potentially reversible dementia-like syndromes.", ventriculomegaly:true, big_vent:true},
+ {id:'cjd', label:'Creutzfeldt-Jakob (prion)', inv:{fL:2,fR:2,tL:2,tR:2,pL:2,pR:2,occ:2,hip:1,bg:3,stem:1,cbl:2,vent:0},
+   notes:{bg:"Basal ganglia/thalamic diffusion restriction on MRI-DWI is a classic early finding.",
+          occ:"Prominent in the Heidenhain variant — cortical visual disturbance, even cortical blindness.",
+          cbl:"Cerebellar involvement produces ataxia, an early feature in some cases.",
+          fL:"Widespread, rapidly evolving cortical involvement within weeks to months — diffuse and fast, unlike the region-restricted onset of other dementias."},
+   sign:"Classic sign: cortical ribboning and/or basal ganglia hyperintensity on DWI — shown here as a bright cortical rim and basal ganglia signal.", dwi:true}
+];
+const LEVEL_COLOR = {0:'var(--lv0)',1:'var(--lv1)',2:'var(--lv2)',3:'var(--lv3)'};
+const LEVEL_LABEL = {0:'Relatively spared',1:'Mild / variable',2:'Moderate',3:'Prominent / hallmark'};
+
+/* ===================== STATE ===================== */
+let activeType = TYPES[0];
+let selectedRegion = null;
+let activeSlice = 'axial';
+
+/* ===================== SLICE SVG BUILDERS ===================== */
+const CORTEX = '#6b747c', WHITE = '#8f99a1', DEEP = '#5b6169', CSF = '#050a0d', RIM='#454d54';
+
+/* Shared filter defs: feTurbulence+feDisplacementMap warps smooth ellipses into an
+   organic, gyrus-like silhouette instead of clip-art-smooth curves; a second
+   high-frequency turbulence layer adds scan-grain texture across the whole image.
+   Pure SVG, procedurally generated — no external/traced imagery, so no licensing risk. */
+const FILTER_DEFS = `<defs>
+  <filter id="organic" x="-30%" y="-30%" width="160%" height="160%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="7" result="n1"/>
+    <feDisplacementMap in="SourceGraphic" in2="n1" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="organicSmall" x="-40%" y="-40%" width="180%" height="180%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="3" result="n2"/>
+    <feDisplacementMap in="SourceGraphic" in2="n2" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="11" result="n3"/>
+    <feColorMatrix in="n3" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0"/>
+  </filter>
+</defs>`;
+
+function axialSVG(){
+  const t = activeType;
+  const bigVent = t.ventriculomegaly ? 2.4 : 1;
+  const wmh = t.wmh;
+  return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    ${FILTER_DEFS}
+    <g filter="url(#organic)">
+      <ellipse cx="200" cy="175" rx="135" ry="115" fill="${CORTEX}"/>
+      <ellipse cx="95" cy="255" rx="55" ry="62" fill="${CORTEX}"/>
+      <ellipse cx="305" cy="255" rx="55" ry="62" fill="${CORTEX}"/>
+      <ellipse cx="200" cy="322" rx="88" ry="42" fill="${CORTEX}"/>
+      <ellipse cx="200" cy="180" rx="112" ry="92" fill="${WHITE}"/>
+      <ellipse cx="102" cy="250" rx="34" ry="42" fill="${WHITE}"/>
+      <ellipse cx="298" cy="250" rx="34" ry="42" fill="${WHITE}"/>
+    </g>
+    ${wmh ? `<g fill="#c7d3d8" opacity=".55">
+      <circle cx="150" cy="120" r="7"/><circle cx="255" cy="118" r="6"/><circle cx="130" cy="205" r="5"/>
+      <circle cx="270" cy="210" r="6"/><circle cx="200" cy="250" r="8"/><circle cx="165" cy="270" r="5"/>
+    </g>` : ''}
+    <g fill="${DEEP}" stroke="#3a4048" stroke-width="1">
+      <ellipse cx="153" cy="153" rx="11" ry="17"/><ellipse cx="247" cy="153" rx="11" ry="17"/>
+      <ellipse cx="138" cy="182" rx="21" ry="29"/><ellipse cx="262" cy="182" rx="21" ry="29"/>
+      <ellipse cx="175" cy="210" rx="19" ry="21"/><ellipse cx="225" cy="210" rx="19" ry="21"/>
+    </g>
+    <g fill="${CSF}">
+      <ellipse cx="170" cy="172" rx="${9*bigVent}" ry="${34*Math.min(bigVent,1.6)}"/>
+      <ellipse cx="230" cy="172" rx="${9*bigVent}" ry="${34*Math.min(bigVent,1.6)}"/>
+      <ellipse cx="200" cy="172" rx="4" ry="30"/>
+    </g>
+    <g fill="${DEEP}" opacity=".9"><ellipse cx="112" cy="272" rx="13" ry="9"/><ellipse cx="288" cy="272" rx="13" ry="9"/></g>
+
+    <ellipse class="region-shape" data-region="fL" cx="150" cy="115" rx="58" ry="48" fill="${LEVEL_COLOR[t.inv.fL]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="fR" cx="250" cy="115" rx="58" ry="48" fill="${LEVEL_COLOR[t.inv.fR]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="pL" cx="150" cy="292" rx="58" ry="52" fill="${LEVEL_COLOR[t.inv.pL]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="pR" cx="250" cy="292" rx="58" ry="52" fill="${LEVEL_COLOR[t.inv.pR]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="occ" cx="200" cy="335" rx="70" ry="28" fill="${LEVEL_COLOR[t.inv.occ]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="tL" cx="98" cy="255" rx="52" ry="60" fill="${LEVEL_COLOR[t.inv.tL]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="tR" cx="302" cy="255" rx="52" ry="60" fill="${LEVEL_COLOR[t.inv.tR]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="hip" cx="112" cy="272" rx="16" ry="12" fill="${LEVEL_COLOR[t.inv.hip]}" opacity=".65" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="hip" cx="288" cy="272" rx="16" ry="12" fill="${LEVEL_COLOR[t.inv.hip]}" opacity=".65" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="bg" cx="155" cy="182" rx="45" ry="50" fill="${LEVEL_COLOR[t.inv.bg]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="bg" cx="245" cy="182" rx="45" ry="50" fill="${LEVEL_COLOR[t.inv.bg]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="vent" cx="200" cy="172" rx="46" ry="36" fill="${LEVEL_COLOR[t.inv.vent]}" opacity=".28" style="mix-blend-mode:screen"/>
+    ${t.dwi ? `<ellipse cx="200" cy="175" rx="135" ry="115" fill="none" stroke="#fff" stroke-width="4" opacity=".5"/>` : ''}
+    <rect x="0" y="0" width="400" height="400" filter="url(#grain)" style="mix-blend-mode:overlay" pointer-events="none"/>
+  </svg>`;
+}
+
+function coronalSVG(){
+  const t = activeType;
+  const hornR = t.mta ? 20 : 9;
+  const hipR = t.mta ? [10,7] : [16,11];
+  const ventR = t.ventriculomegaly ? (t.big_vent ? 34 : 22) : 13;
+  return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    ${FILTER_DEFS}
+    <g filter="url(#organic)">
+      <ellipse cx="200" cy="150" rx="140" ry="95" fill="${CORTEX}"/>
+      <ellipse cx="112" cy="235" rx="52" ry="58" fill="${CORTEX}"/>
+      <ellipse cx="288" cy="235" rx="52" ry="58" fill="${CORTEX}"/>
+      <ellipse cx="200" cy="150" rx="112" ry="70" fill="${WHITE}"/>
+      <ellipse cx="118" cy="230" rx="30" ry="38" fill="${WHITE}"/>
+      <ellipse cx="282" cy="230" rx="30" ry="38" fill="${WHITE}"/>
+      <path d="M110 78 Q200 48 290 78 L290 92 Q200 64 110 92 Z" fill="${WHITE}" opacity=".9"/>
+    </g>
+    <g fill="${DEEP}" stroke="#3a4048" stroke-width="1">
+      <ellipse cx="172" cy="130" rx="22" ry="26"/><ellipse cx="228" cy="130" rx="22" ry="26"/>
+    </g>
+    <g fill="${CSF}">
+      <ellipse cx="177" cy="108" rx="13" ry="20"/><ellipse cx="223" cy="108" rx="13" ry="20"/>
+      <ellipse cx="200" cy="130" rx="5" ry="26"/>
+      <ellipse cx="128" cy="222" rx="${hornR}" ry="${hornR*1.5}"/>
+      <ellipse cx="272" cy="222" rx="${hornR}" ry="${hornR*1.5}"/>
+    </g>
+    <g fill="${DEEP}" opacity=".9">
+      <ellipse cx="142" cy="214" rx="${hipR[0]}" ry="${hipR[1]}"/><ellipse cx="258" cy="214" rx="${hipR[0]}" ry="${hipR[1]}"/>
+    </g>
+
+    <ellipse class="region-shape" data-region="pL" cx="140" cy="98" rx="55" ry="42" fill="${LEVEL_COLOR[t.inv.pL]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="pR" cx="260" cy="98" rx="55" ry="42" fill="${LEVEL_COLOR[t.inv.pR]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="tL" cx="115" cy="235" rx="48" ry="55" fill="${LEVEL_COLOR[t.inv.tL]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="tR" cx="285" cy="235" rx="48" ry="55" fill="${LEVEL_COLOR[t.inv.tR]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="hip" cx="142" cy="214" rx="20" ry="16" fill="${LEVEL_COLOR[t.inv.hip]}" opacity=".7" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="hip" cx="258" cy="214" rx="20" ry="16" fill="${LEVEL_COLOR[t.inv.hip]}" opacity=".7" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="bg" cx="175" cy="128" rx="32" ry="38" fill="${LEVEL_COLOR[t.inv.bg]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="bg" cx="225" cy="128" rx="32" ry="38" fill="${LEVEL_COLOR[t.inv.bg]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="vent" cx="128" cy="222" rx="${ventR}" ry="${ventR*1.4}" fill="${LEVEL_COLOR[t.inv.vent]}" opacity=".35" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="vent" cx="272" cy="222" rx="${ventR}" ry="${ventR*1.4}" fill="${LEVEL_COLOR[t.inv.vent]}" opacity=".35" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="vent" cx="200" cy="112" rx="${ventR*0.7}" ry="${ventR*0.9}" fill="${LEVEL_COLOR[t.inv.vent]}" opacity=".3" style="mix-blend-mode:screen"/>
+    <rect x="0" y="0" width="400" height="400" filter="url(#grain)" style="mix-blend-mode:overlay" pointer-events="none"/>
+  </svg>`;
+}
+
+function sagittalSVG(){
+  const t = activeType;
+  const midbrainPinched = !!t.psp;
+  return `<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+    ${FILTER_DEFS}
+    <g filter="url(#organic)">
+      <ellipse cx="185" cy="140" rx="128" ry="88" fill="${CORTEX}"/>
+      <ellipse cx="290" cy="245" rx="58" ry="46" fill="${CORTEX}"/>
+      <ellipse cx="185" cy="140" rx="102" ry="66" fill="${WHITE}"/>
+      <path d="M95 95 Q185 60 275 100 L272 112 Q185 78 100 108 Z" fill="${WHITE}" opacity=".95"/>
+    </g>
+    <path d="M230 165 Q225 195 232 ${midbrainPinched?205:215} Q238 ${midbrainPinched?208:230} 235 250 Q233 268 248 285"
+      fill="none" stroke="${DEEP}" stroke-width="${midbrainPinched?16:26}" stroke-linecap="round"/>
+    <g fill="${CSF}"><ellipse cx="268" cy="222" rx="7" ry="9"/></g>
+    <g stroke="#4a525a" stroke-width="1.5" fill="none" opacity=".6">
+      <path d="M255 225 Q285 210 320 230"/><path d="M258 245 Q292 230 325 250"/><path d="M262 262 Q292 250 320 268"/>
+    </g>
+
+    <ellipse class="region-shape" data-region="fL" cx="105" cy="128" rx="66" ry="55" fill="${LEVEL_COLOR[t.inv.fL]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="pL" cx="235" cy="90" rx="55" ry="36" fill="${LEVEL_COLOR[t.inv.pL]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="occ" cx="300" cy="135" rx="42" ry="42" fill="${LEVEL_COLOR[t.inv.occ]}" opacity=".5" style="mix-blend-mode:screen"/>
+    <path class="region-shape" data-region="stem" d="M230 165 Q225 195 232 ${midbrainPinched?205:215} Q238 ${midbrainPinched?208:230} 235 250 Q233 268 248 285"
+      fill="none" stroke="${LEVEL_COLOR[t.inv.stem]}" stroke-width="${midbrainPinched?18:28}" stroke-linecap="round" opacity=".6" style="mix-blend-mode:screen"/>
+    <ellipse class="region-shape" data-region="cbl" cx="290" cy="245" rx="58" ry="46" fill="${LEVEL_COLOR[t.inv.cbl]}" opacity=".45" style="mix-blend-mode:screen"/>
+    <rect x="0" y="0" width="400" height="400" filter="url(#grain)" style="mix-blend-mode:overlay" pointer-events="none"/>
+  </svg>`;
+}
+
+const SLICES = {
+  axial:{label:'Axial', desc:'Basal ganglia / lateral ventricle level', build:axialSVG, or:{top:'A',bottom:'P',left:'L',right:'R'}},
+  coronal:{label:'Coronal', desc:'Hippocampal / temporal horn level', build:coronalSVG, or:{top:'SUP',bottom:'INF',left:'L',right:'R'}},
+  sagittal:{label:'Sagittal', desc:'Midline — brainstem &amp; cerebellum', build:sagittalSVG, or:{top:'SUP',bottom:'INF',left:'ANT',right:'POST'}}
+};
+
+/* ===================== RENDER ===================== */
+const svgHost = document.getElementById('svgHost');
+const sliceLabel = document.getElementById('sliceLabel');
+const tooltip = document.getElementById('tooltip');
+
+function renderSlice(){
+  const s = SLICES[activeSlice];
+  svgHost.innerHTML = s.build() +
+    `<span class="orient top">${s.or.top}</span><span class="orient bottom">${s.or.bottom}</span>` +
+    `<span class="orient left">${s.or.left}</span><span class="orient right">${s.or.right}</span>`;
+  sliceLabel.innerHTML = `<b>${s.label}</b> &middot; ${s.desc}`;
+  svgHost.querySelectorAll('.region-shape').forEach(el=>{
+    const id = el.dataset.region;
+    el.addEventListener('pointerenter', e=> showTooltip(e, REGIONS[id].label));
+    el.addEventListener('pointermove', moveTooltip);
+    el.addEventListener('pointerleave', hideTooltip);
+    el.addEventListener('click', ()=> selectRegion(id));
+  });
+  document.getElementById('signBox').innerHTML = `<b>${activeType.label}</b> — ${activeType.sign || 'No single classic imaging sign — diagnosis rests on the overall clinical and multi-domain pattern.'}`;
+}
+
+function showTooltip(e, text){ tooltip.textContent = text; tooltip.classList.add('show'); moveTooltip(e); }
+function moveTooltip(e){ tooltip.style.left = e.clientX + 'px'; tooltip.style.top = e.clientY + 'px'; }
+function hideTooltip(){ tooltip.classList.remove('show'); }
+
+/* slice tabs */
+const sliceTabsHost = document.getElementById('sliceTabs');
+Object.keys(SLICES).forEach(key=>{
+  const b = document.createElement('button');
+  b.textContent = SLICES[key].label;
+  b.className = key === activeSlice ? 'active' : '';
+  b.addEventListener('click', ()=>{
+    activeSlice = key;
+    sliceTabsHost.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    renderSlice();
+  });
+  sliceTabsHost.appendChild(b);
+});
+
+/* type chips */
+const chipsHost = document.getElementById('typeChips');
+TYPES.forEach(t=>{
+  const b = document.createElement('button');
+  b.className = 'chip' + (t.id === activeType.id ? ' active' : '');
+  b.textContent = t.label;
+  b.addEventListener('click', ()=>{
+    activeType = t;
+    chipsHost.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    b.classList.add('active');
+    renderSlice();
+    if (selectedRegion) renderInfo(selectedRegion);
+  });
+  chipsHost.appendChild(b);
+});
+
+/* info panel */
+const infoPanel = document.getElementById('infoPanel');
+function renderInfo(id){
+  const r = REGIONS[id];
+  const lvl = activeType.inv[id] || 0;
+  const note = (activeType.notes && activeType.notes[id]) ||
+    `${r.label} is ${LEVEL_LABEL[lvl].toLowerCase()} in ${activeType.label}.`;
+  infoPanel.innerHTML = `
+    <span class="lvl" style="background:${LEVEL_COLOR[lvl]}">${LEVEL_LABEL[lvl]} in ${activeType.label}</span>
+    <h3>${r.label}</h3>
+    <p><b>Function:</b> ${r.blurb}</p>
+    <p>${note}</p>
+  `;
+}
+function selectRegion(id){ selectedRegion = id; renderInfo(id); }
+
+renderSlice();
+</script>
+</body></html>
