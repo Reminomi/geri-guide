@@ -159,15 +159,16 @@
 const TOOLS = [
   { id:'companion',   label:'Clinic Companion',    file:'tools/clinic-companion.html',    icon:'🩺', cat:'featured', desc:'Full CGA visit companion — history, exam, investigations, formulation & plan across every domain.' },
 
-  { id:'ncdalgo',     label:'NCD Diagnostic Algorithm', file:'tools/ncd-diagnostic-algorithm.html', icon:'📘', cat:'cognition', desc:'Full DSM-5-TR–aligned diagnostic pathway — history, work-up, red flags, subtyping, comparative reference.' },
-  { id:'ncdflow',     label:'NCD Quick Flowchart', file:'tools/ncd-quick-reference.html',   icon:'🗺️', cat:'cognition', desc:'Condensed step-by-step bedside version of the diagnostic algorithm.' },
-  { id:'neuroimaging',label:'Neuroimaging Patterns',file:'tools/dementia-neuroimaging.html', icon:'🩻', cat:'cognition', desc:'Schematic axial/coronal/sagittal slices — atrophy & imaging signs by subtype.' },
-  { id:'brainanat',   label:'Anatomical 3D Brain', file:'tools/dementia-brain-anatomical.html', icon:'🧠', cat:'cognition', desc:'Real segmented Allen-atlas brain model (283 structures) — orbit, explode, hemisphere isolation.' },
-  { id:'subtype',     label:'Subtype Toolkit',     file:'tools/dementia-toolkit.html',      icon:'🧠', cat:'cognition', desc:'Diagnostic-criteria checklists for AD, DLB, bvFTD, PPA, vascular, PSP, CBS, NPH, HD, RPD.' },
-  { id:'cogtests',    label:'Cognitive Tests',     file:'tools/cognitive-tests.html',        icon:'📝', cat:'cognition', desc:'Screening test selection, cut-offs and subtype interpretation patterns.' },
-  { id:'patterns',    label:'Pattern Summary',     file:'tools/pattern-summary.html',        icon:'🔎', cat:'cognition', desc:'Fast differential by cognitive/behavioural pattern.' },
-  { id:'expheatmap',  label:'Feature Heat-map',    file:'tools/expanded-heatmap.html',       icon:'📊', cat:'cognition', desc:'Feature-by-subtype heat-map at a glance — all subtypes and features.' },
-  { id:'meds',        label:'Dementia Medications',file:'tools/dementia-medications.html',   icon:'💊', cat:'cognition', desc:'ChEI/memantine and BPSD pharmacotherapy comparison, PBS criteria.' },
+  { id:'ncdalgo',     label:'NCD Diagnostic Algorithm', file:'tools/ncd-diagnostic-algorithm.html', icon:'📘', cat:'dxdementia', desc:'Full DSM-5-TR–aligned diagnostic pathway — history, work-up, red flags, subtyping, comparative reference.' },
+  { id:'ncdflow',     label:'NCD Quick Flowchart', file:'tools/ncd-quick-reference.html',   icon:'🗺️', cat:'dxdementia', desc:'Condensed step-by-step bedside version of the diagnostic algorithm.' },
+  { id:'subtype',     label:'Subtype Toolkit',     file:'tools/dementia-toolkit.html',      icon:'🧠', cat:'dxdementia', desc:'Diagnostic-criteria checklists for AD, DLB, bvFTD, PPA, vascular, PSP, CBS, NPH, HD, RPD.' },
+  { id:'patterns',    label:'Pattern Summary',     file:'tools/pattern-summary.html',        icon:'🔎', cat:'dxdementia', desc:'Fast differential by cognitive/behavioural pattern.' },
+  { id:'cogtests',    label:'Cognitive Tests',     file:'tools/cognitive-tests.html',        icon:'📝', cat:'dxdementia', desc:'Screening test selection, cut-offs and subtype interpretation patterns.' },
+
+  { id:'neuroimaging',label:'Neuroimaging Patterns',file:'tools/dementia-neuroimaging.html', icon:'🩻', cat:'refdementia', desc:'Schematic axial/coronal/sagittal slices — atrophy & imaging signs by subtype.' },
+  { id:'brainanat',   label:'Anatomical 3D Brain', file:'tools/dementia-brain-anatomical.html', icon:'🧠', cat:'refdementia', desc:'Real segmented Allen-atlas brain model (283 structures) — orbit, explode, hemisphere isolation.' },
+  { id:'expheatmap',  label:'Feature Heat-map',    file:'tools/expanded-heatmap.html',       icon:'📊', cat:'refdementia', desc:'Feature-by-subtype heat-map at a glance — all subtypes and features.' },
+  { id:'meds',        label:'Dementia Medications',file:'tools/dementia-medications.html',   icon:'💊', cat:'refdementia', desc:'ChEI/memantine and BPSD pharmacotherapy comparison, PBS criteria.' },
 
   { id:'falls',       label:'Falls & Bone Health', file:'tools/falls-bone-health.html',      icon:'🦴', cat:'general', desc:'Multifactorial falls-risk assessment and bone-health pathway.' },
   { id:'deprescribing',label:'Deprescribing',      file:'tools/deprescribing.html',          icon:'💊', cat:'general', desc:'STOPP/START v3 and Beers-guided medication review workflow.' },
@@ -180,9 +181,10 @@ const TOOLS = [
 ];
 
 const CATS = [
-  { key:'cognition', label:'Cognition & Dementia' },
-  { key:'general',   label:'General Geriatrics' },
-  { key:'teaching',  label:'Teaching' }
+  { key:'dxdementia',  label:'Dementia Diagnosis' },
+  { key:'refdementia', label:'Dementia Reference' },
+  { key:'general',     label:'General Geriatrics' },
+  { key:'teaching',    label:'Teaching' }
 ];
 
 const homeInner = document.getElementById('homeInner');
